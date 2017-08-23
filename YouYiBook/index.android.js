@@ -23,14 +23,12 @@ import {
   DrawerLayoutAndroid,
 
 } from 'react-native';
-
-import SideMenu from 'react-native-side-menu';
-import Menu from './app/activity/menu'; //导入菜单组件
-
 const uri_image_menu = 'http://image18-c.poco.cn/mypoco/myphoto/20160605/09/17351665220160605093956066.png';
 
 const { width, height } = Dimensions.get('window');
 import Toast, { DURATION } from 'react-native-easy-toast';
+import PdfRead from './app/activity/pdfDemo';
+import SideMenus from './app/activity/App';
 class YouYiBook extends Component {
   constructor(props) {
     super(props);
@@ -41,7 +39,7 @@ class YouYiBook extends Component {
   }
 
   toggle() {
-    this.refs.toast.show('toggle',1000);
+    this.refs.toast.show('toggle', 1000);
     this.setState({
       isOpen: !this.state.isOpen,
     });
@@ -60,35 +58,15 @@ class YouYiBook extends Component {
     });
   }
   showToast() {
+    // this.refs.toast.show(this.state.selectedItem, 1000);
 
-    this.refs.toast.show(this.state.selectedItem,1000);
   }
   render() {
-    const menu = <Menu onItemSelected={this.onMenuItemSelected} />
 
     return (
-      <SideMenu
-        menu={menu}
-        isOpen={this.state.isOpen}
-        openMenuOffset={width/4*3}
-        onChange={(isOpen) => this.updateMenuState(isOpen)}
-      >
-        <View style={styles.container}>
-          <Text style={styles.welcome}>
-            Welcome to React Native!
-            </Text>
-          <Text style={[styles.instructions, { color: 'red' }]} onPress={() => this.showToast(this.state.selectedItem)}>
-            当前选中的菜单是: {this.state.selectedItem}
-          </Text>
-        </View>
-
-        <Button style={styles.button} onPress={() => this.toggle()} title="我是button，点击打开侧边栏" >
-          <Image
-            source={{ uri: uri_image_menu, width: 32, height: 32, }} />
-        </Button>
-        <Toast ref="toast" />
-      </SideMenu>
+      <SideMenus/>
     );
+
   }
 }
 
