@@ -14,7 +14,7 @@ const LABLENOICON = require('../img/null_image.png');
 const { width, height } = Dimensions.get('window');
 export default class WeixinTabBar extends Component {
 
-	propTypes = {
+	static propTypes = {
 		goToPage: React.PropTypes.func, // 跳转到对应tab的方法
 		activeTab: React.PropTypes.number, // 当前被选中的tab下标
 		tabs: React.PropTypes.array, // 所有tabs集合

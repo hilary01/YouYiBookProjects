@@ -10,6 +10,7 @@ import {
     StatusBar,
     FlatList,
     TouchableOpacity,
+    InteractionManager
 } from 'react-native';
 import StackNavigator from 'react-navigation';
 
@@ -51,7 +52,8 @@ export default class Menu extends Component {
         super(props);
         this.state = {
             menuData: {},
-            menuEntity: null
+            menuEntity: null,
+            selectIndex: 0
         };
         // this.onItemClick = this.onItemClick.bind(this);
     }
@@ -83,33 +85,29 @@ export default class Menu extends Component {
 
             menuData: menuList,
 
-        })
+        });
 
         Global.menuEntity = menuList[selectIndex];
 
     }
-    _changeMenuData(selectIndex) {
+    _changeMenuData(selectIndexs) {
         var menuList = this.state.menuData;
-        for (var i = 0; i < menuList.length; i++) {
+        if (this.props.onItemSelected(menuList[selectIndexs]));
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({
 
-            menuList[i].select = false;
+                selectIndex: selectIndexs
+            });
+            Global.menuEntity = menuList[selectIndexs];
 
-        }
-        menuList[selectIndex].select = true;
-        this.setState({
+        });
 
 
-            menuData: menuList,
 
-        })
-        Global.menuEntity = menuList[selectIndex];
-        if (this.props.onItemSelected) {
-            if (this.props.onItemSelected(menuList[selectIndex]));
-        }
 
     }
     _renderItem(itemData) {
-        if (itemData.item.select == true) {
+        if (this.state.selectIndex == itemData.index) {
             return (<TouchableOpacity onPress={() => this.onItemClick(itemData)} >
                 <View>
                     <Image style={{ height: 40, width: width }} source={selectBg}>

@@ -8,6 +8,7 @@ import {
 
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import WeixinTabBar from './view/MainTopTabBar';
+import RecomView from './activity/RecomandView'
 
 export default class MainActivity extends Component {
 
@@ -27,10 +28,7 @@ export default class MainActivity extends Component {
                 renderTabBar={() => <WeixinTabBar tabNames={tabNames} tabIconNames={tabIconNames} />}
                 tabBarPosition='top'>
 
-                <View style={styles.content} tabLabel='key1'>
-                    <Text>#1</Text>
-                </View>
-
+                <RecomView />
                 <View style={styles.content} tabLabel='key2'>
                     <Text>#2</Text>
                 </View>

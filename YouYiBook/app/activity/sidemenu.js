@@ -33,6 +33,7 @@ const { width, height } = Dimensions.get('window');
 import Toast, { DURATION } from 'react-native-easy-toast';
 const menuView = null;
 import MainActivity from '../main'
+var isFristLoad = true;
 export default class SideMenus extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -46,11 +47,11 @@ export default class SideMenus extends Component {
     }
 
 
-    updateMenuState(isOpen) {
-        this.setState({
-            isOpen: isOpen
-        });
-    }
+    // updateMenuState(isOpen) {
+    //     this.setState({
+    //         isOpen: isOpen
+    //     });
+    // }
 
     onMenuItemSelected = (item) => {
         this.setState({
@@ -95,8 +96,7 @@ export default class SideMenus extends Component {
                 menu={menuView}
                 isOpen={this.state.isOpen}
                 openMenuOffset={width / 4 * 3}
-                disableGestures={false}
-                onChange={(isOpen) => this.updateMenuState(isOpen)}
+            /* onChange={(isOpen) => this.updateMenuState(isOpen)} */
             >
                 <View style={styles.page}>
 

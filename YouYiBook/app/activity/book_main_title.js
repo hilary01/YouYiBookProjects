@@ -74,8 +74,8 @@ const styles = StyleSheet.create({
         width: 30
     },
     right_icon: {
-        width: 32,
-        height: 32,
+        width: 39,
+        height: 30,
         marginRight: 10,
         justifyContent: 'center'
 
@@ -86,8 +86,8 @@ const styles = StyleSheet.create({
         marginLeft:5
     },
     left_icon: {
-        width: 32,
-        height: 32,
+        width: 39,
+        height: 30,
         marginLeft: 10,
         justifyContent: 'center'
 

@@ -14,7 +14,9 @@
     "react-native-pdf-view": "^0.3.2",
     "react-native-scrollable-tab-view": "^0.6.7",
     "react-native-side-menu": "^1.0.2",
-    "react-navigation": "^1.0.0-beta.11"
+    "react-native-swRefresh": "^1.2.3",
+    "react-navigation": "^1.0.0-beta.11",
+    "react-native-viewpager": "^0.2.1"
   },
   "devDependencies": {
     "babel-jest": "20.0.3",
