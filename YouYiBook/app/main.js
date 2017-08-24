@@ -8,7 +8,7 @@ import {
 
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import WeixinTabBar from './view/MainTopTabBar';
-import RecomView from './activity/RecomandView'
+import RecomView from './activity/RecommendView'
 
 export default class MainActivity extends Component {
 
