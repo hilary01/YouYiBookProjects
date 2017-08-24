@@ -32,6 +32,7 @@ const uri_image_menu = 'http://image18-c.poco.cn/mypoco/myphoto/20160605/09/1735
 const { width, height } = Dimensions.get('window');
 import Toast, { DURATION } from 'react-native-easy-toast';
 const menuView = null;
+import MainActivity from '../main'
 export default class SideMenus extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -62,12 +63,12 @@ export default class SideMenus extends Component {
 
     }
     menuCallBack(menu) {
-        // var menuEntity = Global.menuEntity;
+        var menuEntity = Global.menuEntity;
         this.setState({
             isOpen: false,
 
         });
-        alert(menu.name);
+        // alert(menuEntity.name);
     }
     onMenuItemOnclik = () => {
         var isOp = this.state.isOpen;
@@ -87,7 +88,7 @@ export default class SideMenus extends Component {
 
     render() {
         menuView = <Menu ref='menuV' onItemSelected={this.menuCallBack.bind(this)} />
-
+        var menuEntity = Global.menuEntity;
         return (
             // <PdfRead/>
             <SideMenu
@@ -100,7 +101,8 @@ export default class SideMenus extends Component {
                 <View style={styles.page}>
 
                     <PublicTitle _menuOnclick={() => this.onMenuItemOnclik()} _filterOnlcik={() => this.filterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} />
-
+                    <View style={{ height: 1, width: width, backgroundColor: '#00B11D' }} />
+                    <MainActivity />
 
                 </View>
                 <Toast ref="toast" />
