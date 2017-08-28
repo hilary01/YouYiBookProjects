@@ -12,7 +12,7 @@ import {
 import ViewPager from 'react-native-viewpager';
 import NetUitl from '../utils/netUitl';
 import LoadView from '../view/loading';
-import StringBufferUtils from '../utils/StringBufferUtil'
+import StringBufferUtils from '../utils/StringBufferUtil';
 const BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/init';
 var pageNum = 1;
 var totalPage = 0;
@@ -22,7 +22,8 @@ import {
     SwRefreshListView, //支持下拉刷新和上拉加载的ListView
     // RefreshStatus, //刷新状态 用于自定义下拉刷新视图时使用
     // LoadMoreStatus //上拉加载状态 用于自定义上拉加载视图时使用
-} from 'react-native-swRefresh'
+} from 'react-native-swRefresh';
+import { CachedImage } from "react-native-img-cache";
 export default class RecomandActivity extends Component {
     constructor(props) {
         super(props);
@@ -43,10 +44,10 @@ export default class RecomandActivity extends Component {
             clearTimeout(timer)
             this.refs.listView.beginRefresh()
         }, 500) //自动调用开始刷新 新增方法
-      
-        InteractionManager.runAfterInteractions(()=>{  
+
+        InteractionManager.runAfterInteractions(() => {
             this.getData();
-         });
+        });
     }
 
     getData() {
@@ -66,8 +67,9 @@ export default class RecomandActivity extends Component {
             if (null != responseData && responseData.return_code == '0') {
                 that.setState({
                     dataSource: that.state.dataSource.cloneWithPages(responseData.ads),
-                    show: false
+                    show: false,
                 });
+
                 totalPage = 1;
                 that.addItemKey(responseData.recommends);
                 pageNum++;
@@ -90,7 +92,7 @@ export default class RecomandActivity extends Component {
             <View style={{ height: 100, justifyContent: 'center', marginTop: 1, backgroundColor: 'white' }}>
                 <TouchableOpacity onPress={() => this.clickItem(itemData, index)} activeOpacity={0.8}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Image style={{ height: 80, width: 80 }} source={itemData.book_icon}></Image>
+                        <CachedImage style={{ height: 80, width: 80 }} source={itemData.book_icon} />
                         <View style={{ height: 100, flexDirection: 'column', justifyContent: 'center' }}>
                             <Text style={styles.news_item_title} numberOfLines={2}>{itemData.book_name}</Text>
                             <Text style={styles.rule_item_time}>作者:{itemData.book_author}</Text>

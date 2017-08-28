@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, Image, Button, TouchableNativeFeedback, StatusBar } from 'react-native';
-export default class HeaderNoBack extends Component {
+export default class PublicTitle extends Component {
 
 
 

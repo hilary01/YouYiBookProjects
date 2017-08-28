@@ -18,13 +18,12 @@ export default class WeixinTabBar extends Component {
 		goToPage: React.PropTypes.func, // 跳转到对应tab的方法
 		activeTab: React.PropTypes.number, // 当前被选中的tab下标
 		tabs: React.PropTypes.array, // 所有tabs集合
-
 		tabNames: React.PropTypes.array, // 保存Tab名称
 		tabIconNames: React.PropTypes.array, // 保存Tab图标
+		key: React.PropTypes.number
 	}
 
 	setAnimationValue({ value }) {
-		console.log(value);
 	}
 
 	componentDidMount() {
@@ -50,12 +49,12 @@ export default class WeixinTabBar extends Component {
 	_renderSelectImage(select) {
 		if (select == true) {
 
-			return <Image style={{ width: width / 4-20, height: 8 }}
+			return <Image style={{ width: width / 4 - 20, height: 8 }}
 				source={LABLEICON} />
 
 		} else {
 
-			return <Image style={{ width: width / 4-20, height:8 }}
+			return <Image style={{ width: width / 4 - 20, height: 8 }}
 				source={LABLENOICON} />
 		}
 
@@ -78,7 +77,7 @@ export default class WeixinTabBar extends Component {
 const styles = StyleSheet.create({
 	tabs: {
 		flexDirection: 'row',
-		alignItems:'flex-end',
+		alignItems: 'flex-end',
 		height: 36,
 	},
 
