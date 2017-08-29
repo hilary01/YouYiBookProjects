@@ -62,14 +62,8 @@ export default class SeriesActivity extends Component {
             //下面的就是请求来的数据
             if (null != responseData && responseData.return_code == '0') {
                 totalPage = 1;
-                that.setState({
-
-                    series: responseData.series
-                })
-                // that.addItemKey(responseData.recommends);
+                that.addItemKey(responseData.series);
                 pageNum++;
-
-
             } else {
                 that.setState({
                     show: false
@@ -77,6 +71,27 @@ export default class SeriesActivity extends Component {
 
             }
         })
+    }
+    addItemKey(list) {
+        var tempList = [];
+        if (null != list && list.length > 0) {
+            for (var i = 0; i < list.length; i++) {
+
+                var seriesEntity = list[i];
+                seriesEntity.key = i;
+                seriesEntity.current_page = 0;
+                tempList.push(seriesEntity);
+
+            }
+
+            this.setState({
+
+                series: tempList,
+                show: false
+            })
+        }
+
+
     }
 
 
@@ -87,10 +102,10 @@ export default class SeriesActivity extends Component {
     _separator = () => {
         return <View style={{ height: 1, backgroundColor: '#e2e2e2' }} />;
     }
-    _renderTopTitle(i, seriesEntity) {
+    _renderTopTitle(m, seriesEntity) {
         var booksView = [];
         var books = seriesEntity.books;
-        // var currentPage=series[i].current_page=0;
+        var current_page = seriesEntity.current_page;
         var that = this;
         for (var i = 0; i < books.length; i++) {
             booksView.push(
@@ -106,12 +121,12 @@ export default class SeriesActivity extends Component {
             {this._separator()}
 
             <ScrollView horizontal={true} pagingEnabled={true} //滑动完一贞  
-                onMomentumScrollEnd={(e) => { this._onAnimationEnd(e) }}
+                onMomentumScrollEnd={(e) => { this._onAnimationEnd(e, m) }}
                 //开始拖拽  
                 onScrollBeginDrag={() => { this._onScrollBeginDrag() }}
                 //结束拖拽  
                 onScrollEndDrag={() => { this._onScrollEndDrag() }}
-                ref='scroll_view'>
+                ref={'scroll_view_' + i} key={i}>
                 <View style={{ flexDirection: 'row', width: scrollViewWidth }}>
                     {booksView}
                 </View>
@@ -119,7 +134,7 @@ export default class SeriesActivity extends Component {
             <View style={{ height: 40, backgroundColor: '#EEEEEE', alignItems: 'center' }}>
 
                 <View style={{ justifyContent: 'center', flexDirection: 'row' }}>
-                    {that._renderAllIndicator(pagecount, 0)}
+                    {that._renderAllIndicator(pagecount, current_page)}
                 </View>
             </View>
             {this._separator()}
@@ -130,26 +145,27 @@ export default class SeriesActivity extends Component {
 
     /**开始拖拽 */
     _onScrollBeginDrag() {
-        console.log("开始拖拽");
+        // console.log("开始拖拽");
         //两种清除方式 都是可以的没有区别  
         // this.timer && clearInterval(this.timer);  
     }
     /**停止拖拽 */
     _onScrollEndDrag() {
-        console.log("停止拖拽");
+        // console.log("停止拖拽");
     }
     /**2.手动滑动分页实现 */
-    _onAnimationEnd(e, i) {
+    _onAnimationEnd(e, m) {
         //求出偏移量  
         let offsetX = e.nativeEvent.contentOffset.x;
         //求出当前页数  
         let pageIndex = Math.floor(offsetX / width);
         //更改状态机 
-        // this.setState({
+        var list = this.state.series;
+        list[m].current_page = pageIndex;
+        this.setState({
 
-        //     currentPage: pageIndex
-        // })
-        console.log(i);
+            series: list
+        })
     }
 
     _getPage(booksView) {
@@ -202,13 +218,14 @@ export default class SeriesActivity extends Component {
         }
         return (
             <View style={styles.menu}>
-                <StatusBar
+                {this.state.show == true ? (<LoadView size={10} color="#FFF" />) : (null)}
+                {/* <StatusBar
                     animated={true}
                     hidden={false}
                     backgroundColor={'#F3F3F3'}
                     barStyle={'default'}
                     networkActivityIndicatorVisible={true}
-                />
+                /> */}
 
                 <ScrollView>
                     <View>

@@ -14,8 +14,7 @@ import NetUitl from '../utils/netUitl';
 import LoadView from '../view/loading';
 import StringBufferUtils from '../utils/StringBufferUtil';
 const BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/init';
-var pageNum = 1;
-var totalPage = 0;
+var pageNum = 0;
 const TITLELOG = require('../img/title_logo.png');
 const { width, height } = Dimensions.get('window');
 import {
@@ -24,6 +23,7 @@ import {
     // LoadMoreStatus //上拉加载状态 用于自定义上拉加载视图时使用
 } from 'react-native-swRefresh';
 import { CachedImage } from "react-native-img-cache";
+var isLastPage = false;
 export default class RecomandActivity extends Component {
     constructor(props) {
         super(props);
@@ -65,12 +65,11 @@ export default class RecomandActivity extends Component {
         NetUitl.post(BASEURL, params, '', function (responseData) {
             //下面的就是请求来的数据
             if (null != responseData && responseData.return_code == '0') {
+                // that.isLastPageMethord(responseData.is_last_page);
                 that.setState({
                     dataSource: that.state.dataSource.cloneWithPages(responseData.ads),
                     show: false,
                 });
-
-                totalPage = 1;
                 that.addItemKey(responseData.recommends);
                 pageNum++;
 
@@ -92,7 +91,7 @@ export default class RecomandActivity extends Component {
             <View style={{ height: 100, justifyContent: 'center', marginTop: 1, backgroundColor: 'white' }}>
                 <TouchableOpacity onPress={() => this.clickItem(itemData, index)} activeOpacity={0.8}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <CachedImage style={{ height: 80, width: 80 }} source={itemData.book_icon} />
+                        <CachedImage style={{ height: 80, width: 60, marginLeft: 10 }} source={{ uri: itemData.book_icon }} />
                         <View style={{ height: 100, flexDirection: 'column', justifyContent: 'center' }}>
                             <Text style={styles.news_item_title} numberOfLines={2}>{itemData.book_name}</Text>
                             <Text style={styles.rule_item_time}>作者:{itemData.book_author}</Text>
@@ -114,27 +113,18 @@ export default class RecomandActivity extends Component {
             </View>
         );
     }
-    /**
-    * 判断是否是最后一页
-    * @param {*} totalPage 
-    */
+    //判断是否分页
+    isLastPageMethord(flag) {
+        if (stringUtil.isNotEmpty(flag) && '1' == flag) {
 
-    getIsLastPage(totalPage) {
-        var islast = false;
-
-        if (pageNum <= parseInt(totalPage)) {
-
-            islast = false;
+            isLastPage = true;
         } else {
-            this.refs.listView.setNoMoreData()
-            islast = true;
+
+            isLastPage = false;
         }
 
 
-
-        return islast;
     }
-
 
 
     //整合数据
@@ -151,14 +141,9 @@ export default class RecomandActivity extends Component {
             }
 
             that._data = that._data.concat(rulelist);
-            var ismore = false;
-            if (parseInt(totalPage) > 1) {
-
-                ismore = true;
-            }
             that.setState({
                 dataListViewSource: that.state.dataListViewSource.cloneWithRows(this._data),
-                isLoadMore: ismore,
+                isLoadMore: isLastPage,
                 show: false
             });
 
@@ -185,9 +170,8 @@ export default class RecomandActivity extends Component {
      * @param {*下拉加载更多} end 
      */
     _onLoadMore(end) {
-        this.getData(typeId);
-        let isNoMore = pageNum > parseInt(totalPage); //是否已无更多数据
-        end(isNoMore)// 假设加载4页后数据全部加载完毕 加载成功后需要调用end结束刷新  
+        this.getData();
+        end(isLastPage)// 假设加载4页后数据全部加载完毕 加载成功后需要调用end结束刷新  
 
 
     }

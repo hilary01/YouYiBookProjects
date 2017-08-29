@@ -8,10 +8,13 @@ import {
 
 import ScrollableTabView from 'react-native-scrollable-tab-view';
 import WeixinTabBar from './view/MainTopTabBar';
-import RecomView from './activity/RecommendView'
-import SeriesView from './activity/SeriesView'
+import RecomView from './activity/RecommendView';
+import SeriesView from './activity/SeriesView';
+import RankView from './activity/RankView';
 export default class MainActivity extends Component {
-
+    static propTypes = {
+        changeIcon: React.PropTypes.func.isRequired,
+    };// 注意这里有分号
     constructor(props) {
         super(props);
 
@@ -26,15 +29,21 @@ export default class MainActivity extends Component {
         return (
             <ScrollableTabView
                 renderTabBar={() => <WeixinTabBar tabNames={tabNames} tabIconNames={tabIconNames} />}
-                tabBarPosition='top' locked={true}>
+                tabBarPosition='top' locked={true}
+                onChangeTab={(obj) => {
+                    if (obj.i == 1||obj.i==2) {
+
+                        this.props.changeIcon(true)
+                    } else {
+                        this.props.changeIcon(false)
+
+                    }
+                }
+                }>
 
                 <RecomView />
                 <SeriesView />
-
-                <View style={styles.content} tabLabel='key3'>
-                    <Text>#3</Text>
-                </View>
-
+                <RankView />
                 <View style={styles.content} tabLabel='key4'>
                     <Text>#4</Text>
                 </View>

@@ -21,6 +21,7 @@ import {
     ToastAndroid,
     Button,
     DrawerLayoutAndroid,
+    StatusBar
 
 } from 'react-native';
 import SideMenu from 'react-native-side-menu';
@@ -28,7 +29,7 @@ import Menu from '../activity/menu'; //导入菜单组件
 import PublicTitle from '../activity/book_main_title';
 import Global from '../utils/global';
 const uri_image_menu = 'http://image18-c.poco.cn/mypoco/myphoto/20160605/09/17351665220160605093956066.png';
-
+const FITERIMG = require('../img/btn_titel_filter.png');
 const { width, height } = Dimensions.get('window');
 import Toast, { DURATION } from 'react-native-easy-toast';
 const menuView = null;
@@ -43,6 +44,7 @@ export default class SideMenus extends Component {
         super(props);
         this.state = {
             isOpen: false,
+            showFilter: false
         };
     }
 
@@ -82,6 +84,12 @@ export default class SideMenus extends Component {
 
         alert('fiterOnlcik');
     }
+    fiterIcon = (flag) => {
+
+        this.setState({
+            showFilter: flag
+        })
+    }
     searchOnlcik = () => {
 
         alert('searchOnlcik');
@@ -99,10 +107,16 @@ export default class SideMenus extends Component {
             /* onChange={(isOpen) => this.updateMenuState(isOpen)} */
             >
                 <View style={styles.page}>
-
-                    <PublicTitle _menuOnclick={() => this.onMenuItemOnclik()} _filterOnlcik={() => this.filterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} />
+                    <StatusBar
+                        animated={true}
+                        hidden={false}
+                        backgroundColor={'#F3F3F3'}
+                        barStyle={'default'}
+                        networkActivityIndicatorVisible={true}
+                    />
+                    <PublicTitle _menuOnclick={() => this.onMenuItemOnclik()} _filterOnlcik={() => this.filterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} filterIcon={this.state.showFilter == true ? FITERIMG : null} />
                     <View style={{ height: 1, width: width, backgroundColor: '#00B11D' }} />
-                    <MainActivity />
+                    <MainActivity changeIcon={this.fiterIcon.bind(this)} />
 
                 </View>
                 <Toast ref="toast" />
