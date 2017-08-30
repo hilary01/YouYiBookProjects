@@ -81,8 +81,9 @@ export default class SideMenus extends Component {
         });
     }
     fiterOnlcik = () => {
+        const { navigate } = this.props.navigation;
+        navigate('filterView');
 
-        alert('fiterOnlcik');
     }
     fiterIcon = (flag) => {
 
@@ -114,7 +115,7 @@ export default class SideMenus extends Component {
                         barStyle={'default'}
                         networkActivityIndicatorVisible={true}
                     />
-                    <PublicTitle _menuOnclick={() => this.onMenuItemOnclik()} _filterOnlcik={() => this.filterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} filterIcon={this.state.showFilter == true ? FITERIMG : null} />
+                    <PublicTitle _menuOnclick={() => this.onMenuItemOnclik()} _filterIconOnlcik={() => this.fiterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} filterIcon={this.state.showFilter == true ? FITERIMG : null} />
                     <View style={{ height: 1, width: width, backgroundColor: '#00B11D' }} />
                     <MainActivity changeIcon={this.fiterIcon.bind(this)} />
 

@@ -22,6 +22,9 @@ import LoadView from '../view/loading';
 import StringBufferUtils from '../utils/StringBufferUtil';
 var pageNum = 0;
 var totalPage = 0;
+var publisherId = '';
+var provinceId = '';
+var cityId = '';
 const BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/series_query';
 import { CachedImage } from "react-native-img-cache";
 export default class SeriesActivity extends Component {
@@ -49,6 +52,9 @@ export default class SeriesActivity extends Component {
 
     getData() {
         StringBufferUtils.init();
+        StringBufferUtils.append('publisher_id=' + publisherId);
+        StringBufferUtils.append('&&province=' + provinceId);
+        StringBufferUtils.append('&&city=' + cityId);
         StringBufferUtils.append('&&page=' + pageNum);
         StringBufferUtils.append('&&count=' + 10);
         let params = StringBufferUtils.toString();

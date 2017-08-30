@@ -11,6 +11,7 @@ import WeixinTabBar from './view/MainTopTabBar';
 import RecomView from './activity/RecommendView';
 import SeriesView from './activity/SeriesView';
 import RankView from './activity/RankView';
+import ClassifyView from './activity/ClassifyView';
 export default class MainActivity extends Component {
     static propTypes = {
         changeIcon: React.PropTypes.func.isRequired,
@@ -31,7 +32,7 @@ export default class MainActivity extends Component {
                 renderTabBar={() => <WeixinTabBar tabNames={tabNames} tabIconNames={tabIconNames} />}
                 tabBarPosition='top' locked={true}
                 onChangeTab={(obj) => {
-                    if (obj.i == 1||obj.i==2) {
+                    if (obj.i == 1 || obj.i == 2) {
 
                         this.props.changeIcon(true)
                     } else {
@@ -44,9 +45,7 @@ export default class MainActivity extends Component {
                 <RecomView />
                 <SeriesView />
                 <RankView />
-                <View style={styles.content} tabLabel='key4'>
-                    <Text>#4</Text>
-                </View>
+                <ClassifyView />
             </ScrollableTabView>
         );
     }

@@ -22,7 +22,8 @@ import {
 } from 'react-native';
 import sidemenu from './sidemenu';
 import detail from '../main';
-
+import filterActivity from '../activity/FilterView';
+import PublisherActivity from '../activity/PublisherView';
 /**
  * 1、Test1是通过普通的属性创建的Tabbar和导航
  * 2、Test2是在页面中通过属性创建Tabbar和导航
@@ -32,21 +33,40 @@ import detail from '../main';
 
 
 
-
+const TransitionConfiguration = () => ({
+    screenInterpolator: (sceneProps) => {
+        const { scene } = sceneProps;
+        const { route } = scene;
+        const params = route.params || {};
+        const transition = params.transition || 'forHorizontal';
+        return CardStackStyleInterpolator[transition](sceneProps);
+    },
+});
 
 // 初始化StackNavigator
 const MyNav = StackNavigator({
     main: {
         screen: sidemenu,
-       
+
     },
     // 将需要跳转的页面注册在这里，全局才可以跳转
     detail: {
         screen: detail
     },
+    filterView: {
+
+        screen: filterActivity
+    },
+    publisherView: {
+
+        screen: PublisherActivity
+    },
+
 
 }, {
-    initialRouteName:'main'
+        transitionConfig: TransitionConfiguration,
+    }, {
+        initialRouteName: 'main'
     });
 
 const TabOptions = (tabBarTitle, normalImage, selectedImage, navTitle) => {
