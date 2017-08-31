@@ -14,6 +14,7 @@ var { height, width } = Dimensions.get('window');
 import PublicTitle from '../activity/book_public_title';
 const ITEMICON = require('../img/bookstore_lead_sign.png');
 const FINISHICON = require('../img/btn_titel_finish.png');
+import CityPicker from '../view/city_picker';
 export default class FilterActivity extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -24,15 +25,31 @@ export default class FilterActivity extends Component {
         this.state = {
             publishName: '所有',
             cityName: '所有',
+            publishId: '',
+            show_city_picker: false,
+            provinceId: '',
+            cityIds: '',
         };
 
     }
+    /**
+           * 选择城市
+           */
+    selectCity() {
+        this.setState({
 
+            show_city_picker: true
+        })
+    }
     componentDidMount() {
     }
     finishOnlcik = () => {
-
-        alert('finishOnlcik');
+        const { navigate, goBack, state } = this.props.navigation;
+        var pId = this.state.publishId;
+        var prId = this.state.provinceId;
+        var cId = this.state.cityIds;
+        state.params.callback(pId, prId, cId);
+        goBack();
     }
     backOnclik = () => {
         const { goBack } = this.props.navigation;
@@ -41,14 +58,33 @@ export default class FilterActivity extends Component {
     _goPublishActivity() {
 
         const { navigate } = this.props.navigation;
-        navigate('publisherView');
+        navigate('publisherView', {
+            // 跳转的时候携带一个参数去下个页面
+            callback: (data) => {
+                this.setState({
+                    publishName: data.publisher_name,
+                    publishId: data.publisher_id
 
-
+                })
+            }
+        });
     }
     _goCityActivity() {
 
-        alert('_goCityActivity');
+        this.selectCity();
 
+    }
+    pushDetails() {
+        var cityEntity = this.refs.cPicker.passMenthod();
+        var place = cityEntity.province + ' ' + cityEntity.city;
+        this.setState({
+
+            cityName: place,
+            show_city_picker: false,
+            provinceId: cityEntity.provinceid,
+            cityIds: cityEntity.cityid
+
+        })
     }
     render() {
 
@@ -96,6 +132,7 @@ export default class FilterActivity extends Component {
                         </View>
                     </TouchableOpacity>
                 </View>
+                <CityPicker visible={this.state.show_city_picker} callbackParent={() => this.pushDetails()} ref="cPicker" />
             </View>
         )
     }

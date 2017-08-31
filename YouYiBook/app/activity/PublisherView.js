@@ -29,7 +29,7 @@ import {
     // LoadMoreStatus //上拉加载状态 用于自定义上拉加载视图时使用
 } from 'react-native-swRefresh';
 import { CachedImage } from "react-native-img-cache";
-export default class RecomandActivity extends Component {
+export default class FileterTempActivity extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
         header: null,
@@ -39,13 +39,15 @@ export default class RecomandActivity extends Component {
         this.state = {
             show: true,
             isLoadMore: false,
-            publisherList: {}
-        }
-        this._data = [];
-    }
+            publisherList: {},
 
+        }
+    }
     componentDidMount() {
         this.getData(true);
+    }
+    componentWillUnmount() {
+        pageNum = 0;
     }
 
     getData(flag) {
@@ -56,6 +58,7 @@ export default class RecomandActivity extends Component {
         this.fetchData(flag, params);
 
     }
+
     //判断是否分页
     isLastPageMethord(flag) {
         if (stringUtil.isNotEmpty(flag) && '1' == flag) {
@@ -121,7 +124,6 @@ export default class RecomandActivity extends Component {
     //整合数据
     addItemKey(flag, rulelist) {
         var that = this;
-
         if (null != rulelist && rulelist.length > 0) {
 
             //整合法规数据
@@ -150,32 +152,34 @@ export default class RecomandActivity extends Component {
             show: false
 
         })
+        const { navigate, goBack, state } = this.props.navigation;
+        state.params.callback(lists[index]);
+        goBack();
     }
 
     defaultSelectItem(flag, tempList) {
-        if (flag) {
-            var list = tempList;
-            var obj = new Object();
-            obj.city = '';
-            obj.province = '';
-            obj.publisher_id = '0';
-            obj.publisher_name = '所有';
-            list.unshift(obj);
-            for (var i = 0; i < list.length; i++) {
+        var list = tempList;
+        var obj = new Object();
+        obj.city = '';
+        obj.province = '';
+        obj.publisher_id = '0';
+        obj.publisher_name = '所有';
+        list.unshift(obj);
+        for (var i = 0; i < list.length; i++) {
 
-                if (i == 0) {
+            if (i == 0) {
 
-                    list[i].select = true;
-                }
-
+                list[i].select = true;
             }
+
         }
+
         this.setState({
             publisherList: list,
             isLoadMore: isLastPage,
             show: false
         });
-
+        console.log(this.state.publisherList.length);
     }
 
     _separator = () => {
@@ -207,10 +211,11 @@ export default class RecomandActivity extends Component {
                 <View style={styles.main_bg}>
                     <FlatList
                         ref={(flatList) => this._flatList = flatList}
-                        renderItem={this._renderSearchItem.bind(this)}
+                        renderItem={this._renderSearchItem}
                         keyExtractor={this._keyExtractor}
                         data={this.state.publisherList}
-                        extraData={this.state}>
+                        extraData={this.state}
+                    >
 
                     </FlatList>
 

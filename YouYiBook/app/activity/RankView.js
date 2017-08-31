@@ -18,6 +18,9 @@ const BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/ranking_
 var pageNum = 0;
 var isLastPage = false;
 var rankType = '1';//1:销售量,2:出版时间,3:收藏,4:关注度
+var publisherId = '';
+var provinceId = '';
+var cityId = '';
 const TITLELOG = require('../img/title_logo.png');
 const { width, height } = Dimensions.get('window');
 import {
@@ -27,7 +30,11 @@ import {
 } from 'react-native-swRefresh';
 import { CachedImage } from "react-native-img-cache";
 var menus = ['销售量', '出版时间', '收藏', '关注度'];
-export default class RecomandActivity extends Component {
+var publisherId = '';
+var provinceId = '';
+var cityId = '';
+import Global from '../utils/global';
+export default class RankActivity extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -38,12 +45,27 @@ export default class RecomandActivity extends Component {
         }
         this._data = [];
     }
+    updateUi(obj) {
+        if (undefined != Global.publishId && undefined != Global.provinceId && undefined != Global.cityId) {
+            publisherId = Global.publishId;
+            provinceId = Global.provinceId;
+            cityId = Global.cityId;
 
+        }
+        console.log(publisherId, provinceId, cityId);
+        pageNum = 0;
+        isLastPage = false;
+        this._data = [];
+        this.getData(rankType);
+    }
     componentDidMount() {
         let timer = setTimeout(() => {
             clearTimeout(timer)
             this.refs.listView.beginRefresh()
         }, 500) //自动调用开始刷新 新增方法
+        publisherId = Global.publishId;
+        provinceId = Global.provinceId;
+        cityId = Global.cityId;
         this.initMenu();
         this.getData(rankType);
     }
@@ -71,6 +93,11 @@ export default class RecomandActivity extends Component {
 
             menuList: topMenu
         })
+
+
+    }
+
+    _updateUi() {
 
 
     }
@@ -184,6 +211,9 @@ export default class RecomandActivity extends Component {
     getData(rankType) {
         StringBufferUtils.init();
         StringBufferUtils.append('rank_type=' + rankType);
+        StringBufferUtils.append('&&publisher_id=' + publisherId);
+        StringBufferUtils.append('&&province=' + provinceId);
+        StringBufferUtils.append('&&city=' + cityId);
         StringBufferUtils.append('&&page=' + pageNum);
         StringBufferUtils.append('&&count=' + 10);
         let params = StringBufferUtils.toString();

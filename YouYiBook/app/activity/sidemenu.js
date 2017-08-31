@@ -44,7 +44,8 @@ export default class SideMenus extends Component {
         super(props);
         this.state = {
             isOpen: false,
-            showFilter: false
+            showFilter: false,
+            whichFlag: 1
         };
     }
 
@@ -82,13 +83,35 @@ export default class SideMenus extends Component {
     }
     fiterOnlcik = () => {
         const { navigate } = this.props.navigation;
-        navigate('filterView');
-
+        navigate('filterView', {
+            // 跳转的时候携带一个参数去下个页面
+            callback: (publishId, provinceId, cityId) => {
+                var obj = new Object();
+                obj.pId = publishId;
+                obj.prId = provinceId;
+                obj.cId = cityId;
+                Global.publishId = publishId;
+                Global.provinceId = provinceId;
+                Global.cityId = cityId;
+                this._updateData(obj);
+            }
+        });
     }
-    fiterIcon = (flag) => {
+    /**
+     * 
+     * @param {*更新数据} publishId 
+     * @param {*} provinceId 
+     * @param {*} cityId 
+     */
+    _updateData = (obj) => {
+        var flag = this.state.whichFlag;
+        this.refs.mainView.updateUi(obj, flag);
+    }
+    fiterIcon = (flag, arg) => {
 
         this.setState({
-            showFilter: flag
+            showFilter: flag,
+            whichFlag: arg
         })
     }
     searchOnlcik = () => {
@@ -117,7 +140,7 @@ export default class SideMenus extends Component {
                     />
                     <PublicTitle _menuOnclick={() => this.onMenuItemOnclik()} _filterIconOnlcik={() => this.fiterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} filterIcon={this.state.showFilter == true ? FITERIMG : null} />
                     <View style={{ height: 1, width: width, backgroundColor: '#00B11D' }} />
-                    <MainActivity changeIcon={this.fiterIcon.bind(this)} />
+                    <MainActivity changeIcon={this.fiterIcon.bind(this)} ref='mainView' />
 
                 </View>
                 <Toast ref="toast" />

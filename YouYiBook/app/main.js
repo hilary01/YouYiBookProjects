@@ -18,11 +18,26 @@ export default class MainActivity extends Component {
     };// 注意这里有分号
     constructor(props) {
         super(props);
-
         this.state = {
             tabNames: ['推荐', '系列书籍', '排行', '分类'],
         };
     }
+
+    updateUi(obj, flag) {
+
+
+        switch (flag) {
+            case 1://系列图书
+                this.refs.seriesView.updateUi(obj);
+                break
+            case 2://排行
+                this.refs.rankView.updateUi(obj);
+                break
+
+        }
+
+    }
+
 
     render() {
         let tabNames = this.state.tabNames;
@@ -34,17 +49,17 @@ export default class MainActivity extends Component {
                 onChangeTab={(obj) => {
                     if (obj.i == 1 || obj.i == 2) {
 
-                        this.props.changeIcon(true)
+                        this.props.changeIcon(true, obj.i)
                     } else {
-                        this.props.changeIcon(false)
+                        this.props.changeIcon(false, obj.i)
 
                     }
                 }
                 }>
 
                 <RecomView />
-                <SeriesView />
-                <RankView />
+                <SeriesView ref='seriesView' />
+                <RankView ref='rankView'/>
                 <ClassifyView />
             </ScrollableTabView>
         );

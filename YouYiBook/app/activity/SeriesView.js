@@ -33,8 +33,9 @@ export default class SeriesActivity extends Component {
         headerTitle: null,
         headerRight: null,
     });
-
-
+    // static propTypes = {
+    //     _updateUi: React.PropTypes.func.isRequired,
+    // };// 注意这里有分号
     constructor(props) {
         super(props);
         this.state = {
@@ -47,6 +48,23 @@ export default class SeriesActivity extends Component {
         this._data = [];
     }
     componentDidMount() {
+        if (undefined != Global.publishId && undefined != Global.provinceId && undefined != Global.cityId) {
+            publisherId = Global.publishId;
+            provinceId = Global.provinceId;
+            cityId = Global.cityId;
+
+        }
+        this.getData();
+    }
+
+    updateUi(obj) {
+        publisherId = Global.publishId;
+        provinceId = Global.provinceId;
+        cityId = Global.cityId;
+        console.log(publisherId, provinceId, cityId);
+        this._data = [];
+        pageNum = 0;
+        totalPage = 0;
         this.getData();
     }
 
@@ -64,6 +82,7 @@ export default class SeriesActivity extends Component {
     // 数据请求
     fetchData(params) {
         var that = this;
+        console.log(BASEURL + params);
         NetUitl.post(BASEURL, params, '', function (responseData) {
             //下面的就是请求来的数据
             if (null != responseData && responseData.return_code == '0') {
@@ -93,6 +112,13 @@ export default class SeriesActivity extends Component {
             this.setState({
 
                 series: tempList,
+                show: false
+            })
+        } else {
+            this._data = [];
+            this.setState({
+
+                series: this._data,
                 show: false
             })
         }
