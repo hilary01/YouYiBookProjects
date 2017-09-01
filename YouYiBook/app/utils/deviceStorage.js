@@ -1,17 +1,19 @@
-import React, {
+import React, { Component } from 'react';
+import  {
     AsyncStorage
 } from 'react-native';
 
-class DeviceStorage {
+export default class DeviceStorage extends React.Component {
     /**
      * 获取
      * @param key
      * @returns {Promise<T>|*|Promise.<TResult>}
      */
 
-    static get(key) {
+    static get(key, callBack) {
         return AsyncStorage.getItem(key).then((value) => {
             const jsonValue = JSON.parse(value);
+            callBack(jsonValue);
             return value;
         });
     }
@@ -55,5 +57,3 @@ class DeviceStorage {
         return AsyncStorage.removeItem(key);
     }
 }
-
-export default DeviceStorage;

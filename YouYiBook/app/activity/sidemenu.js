@@ -49,12 +49,7 @@ export default class SideMenus extends Component {
         };
     }
 
-
-    // updateMenuState(isOpen) {
-    //     this.setState({
-    //         isOpen: isOpen
-    //     });
-    // }
+ 
 
     onMenuItemSelected = (item) => {
         this.setState({
@@ -116,7 +111,8 @@ export default class SideMenus extends Component {
     }
     searchOnlcik = () => {
 
-        alert('searchOnlcik');
+        const { navigate } = this.props.navigation;
+        navigate('searchView');
     }
 
     render() {

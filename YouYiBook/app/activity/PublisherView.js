@@ -105,8 +105,7 @@ export default class FileterTempActivity extends Component {
                         {this._renderSelectImg(itemData.item.select)}
                     </View>
                     <View style={{ width: width, height: 1, backgroundColor: '#e2e2e2' }}>
-                    </View>
-
+                    </View>                                                                                                                                            
                 </View>
             </TouchableOpacity>
         );
