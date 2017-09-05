@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, Button, TouchableNativeFeedback, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, Image, Button, TouchableOpacity, StatusBar } from 'react-native';
 const MENUIMG = require('../img/menu_btn.png');
 const TITLELOG = require('../img/title_logo.png');
 const SEARCHIMG = require('../img/btn_titel_search.png');
@@ -21,25 +21,25 @@ export default class PublicTitle extends Component {
                 />
                 <View style={styles.left_view} >
 
-                    <TouchableNativeFeedback onPress={() => this.props._menuOnclick()} >
+                    <TouchableOpacity onPress={() => this.props._menuOnclick()} >
                         <Image style={styles.left_icon} source={MENUIMG}></Image>
-                    </TouchableNativeFeedback>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.textview}>
                     <Image source={TITLELOG} style={{ height: 32, width: 32 }} />
                     <Text style={styles.textstyle} numberOfLines={1}>游逸书城</Text>
                 </View>
                 <View style={styles.right_view} >
-                    <TouchableNativeFeedback onPress={() => this.props._filterIconOnlcik()} >
+                    <TouchableOpacity onPress={() => this.props._filterIconOnlcik()} >
 
                         <Image style={styles.right_icon} source={this.props.filterIcon}></Image>
 
-                    </TouchableNativeFeedback>
-                    <TouchableNativeFeedback onPress={() => this.props._searchOnlcik()} >
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => this.props._searchOnlcik()} >
 
                         <Image style={styles.right_icon} source={SEARCHIMG}></Image>
 
-                    </TouchableNativeFeedback>
+                    </TouchableOpacity>
 
                 </View>
             </View>
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-start',
         alignItems: 'center',
         width: 30,
-        marginLeft:5
+        marginLeft: 5
     },
     left_icon: {
         width: 39,

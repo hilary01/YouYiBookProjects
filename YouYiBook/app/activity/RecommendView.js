@@ -24,6 +24,7 @@ import {
 } from 'react-native-swRefresh';
 import { CachedImage } from "react-native-img-cache";
 var isLastPage = false;
+var navigate = null;
 export default class RecomandActivity extends Component {
     constructor(props) {
         super(props);
@@ -40,6 +41,7 @@ export default class RecomandActivity extends Component {
     }
 
     componentDidMount() {
+        navigate = this.props.navigation;
         let timer = setTimeout(() => {
             clearTimeout(timer)
             this.refs.listView.beginRefresh()
@@ -84,6 +86,10 @@ export default class RecomandActivity extends Component {
     }
     //点击列表点击每一行
     clickItem(item, index) {
+        navigate('BookDetailView', {
+            book_id: item.book_id
+        });
+
     }
     // 返回国内法规Item
     _renderSearchItem = (itemData, index) => {
@@ -206,7 +212,7 @@ export default class RecomandActivity extends Component {
                 <SwRefreshListView
                     dataSource={this.state.dataListViewSource}
                     ref="listView"
-                    renderRow={this._renderSearchItem}
+                    renderRow={this._renderSearchItem.bind(this)}
                     onRefresh={this._onListRefersh.bind(this)}//设置下拉刷新的方法 传递参数end函数 当刷新操作结束时 */
                     onLoadMore={this._onLoadMore.bind(this)} //设置上拉加载执行的方法 传递参数end函数 
                     isShowLoadMore={this.state.isLoadMore}

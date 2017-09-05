@@ -1,5 +1,13 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, Button, TouchableNativeFeedback, StatusBar } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    Button,
+    TouchableOpacity,
+    StatusBar
+} from 'react-native';
 const BACKICON = require('../img/btn_titel_back.png');
 const TITLELOG = require('../img/title_logo.png');
 const FITERIMG = require('../img/btn_titel_filter.png');
@@ -20,20 +28,20 @@ export default class PublicTitle extends Component {
                 />
                 <View style={styles.left_view} >
 
-                    <TouchableNativeFeedback onPress={() => this.props._backOnclick()} >
+                    <TouchableOpacity onPress={() => this.props._backOnclick()} >
                         <Image style={styles.left_icon} source={BACKICON}></Image>
-                    </TouchableNativeFeedback>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.textview}>
                     <Image source={TITLELOG} style={{ height: 32, width: 32 }} />
                     <Text style={styles.textstyle} numberOfLines={1}>{this.props.title}</Text>
                 </View>
                 <View style={styles.right_view} >
-                    <TouchableNativeFeedback onPress={() => this.props._finishOnlcik()} >
+                    <TouchableOpacity onPress={() => this.props._finishOnlcik()} >
 
                         <Image style={styles.right_icon} source={this.props.finishIcon}></Image>
 
-                    </TouchableNativeFeedback>
+                    </TouchableOpacity>
 
                 </View>
             </View>

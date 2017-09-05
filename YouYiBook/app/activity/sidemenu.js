@@ -49,7 +49,7 @@ export default class SideMenus extends Component {
         };
     }
 
- 
+
 
     onMenuItemSelected = (item) => {
         this.setState({
@@ -118,8 +118,8 @@ export default class SideMenus extends Component {
     render() {
         menuView = <Menu ref='menuV' onItemSelected={this.menuCallBack.bind(this)} />
         var menuEntity = Global.menuEntity;
+        const { navigate } = this.props.navigation;
         return (
-            // <PdfRead/>
             <SideMenu
                 menu={menuView}
                 isOpen={this.state.isOpen}
@@ -136,7 +136,7 @@ export default class SideMenus extends Component {
                     />
                     <PublicTitle _menuOnclick={() => this.onMenuItemOnclik()} _filterIconOnlcik={() => this.fiterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} filterIcon={this.state.showFilter == true ? FITERIMG : null} />
                     <View style={{ height: 1, width: width, backgroundColor: '#00B11D' }} />
-                    <MainActivity changeIcon={this.fiterIcon.bind(this)} ref='mainView' />
+                    <MainActivity changeIcon={this.fiterIcon.bind(this)} ref='mainView' navigation={navigate} />
 
                 </View>
                 <Toast ref="toast" />

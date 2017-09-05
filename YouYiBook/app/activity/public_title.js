@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Image, Button, TouchableNativeFeedback, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, Image, Button, TouchableOpacity, StatusBar } from 'react-native';
 export default class PublicTitle extends Component {
 
 
@@ -17,20 +17,20 @@ export default class PublicTitle extends Component {
                 />
                 <View style={styles.left_view} >
 
-                    <TouchableNativeFeedback onPress={() => this.props._backOnclick()} >
+                    <TouchableOpacity onPress={() => this.props._backOnclick()} >
                         <Image style={styles.left_icon} source={this.props.left_icon}></Image>
-                    </TouchableNativeFeedback>
+                    </TouchableOpacity>
                 </View>
                 <View style={styles.textview}>
                     <Text style={styles.textstyle} numberOfLines={1}>{this.props.text || "标题头"}</Text>
                 </View>
                 <View style={styles.right_view} >
 
-                    <TouchableNativeFeedback onPress={() => this.props._searchOnlcik()} >
+                    <TouchableOpacity onPress={() => this.props._searchOnlcik()} >
 
                         <Image style={styles.right_icon} source={this.props.icon}></Image>
 
-                    </TouchableNativeFeedback>
+                    </TouchableOpacity>
                 </View>
             </View>
         );

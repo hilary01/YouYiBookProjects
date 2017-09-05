@@ -109,14 +109,12 @@ export default class SearchResultActivity extends Component {
                             <Text style={styles.news_item_title} numberOfLines={2}>{itemData.book_name}</Text>
                             <Text style={styles.rule_item_time}>作者:{itemData.book_author}</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-
                                 <Text style={{ color: '#999999', paddingLeft: 20, }}>价格:</Text>
                                 <Text style={{ color: '#00B11D' }}>¥{itemData.e_price}</Text>
                                 <Text style={{ color: '#999999' }}>(电)</Text>
                                 <Text style={{ color: '#00B11D', paddingLeft: 10, }}>¥{itemData.p_price}</Text>
                                 <Text style={{ color: '#999999' }}>(纸)</Text>
                             </View>
-
                             <Text style={styles.rule_item_time} numberOfLines={1}>{itemData.intro}</Text>
 
                         </View>

@@ -38,7 +38,6 @@ export default class MainActivity extends Component {
 
     }
 
-
     render() {
         let tabNames = this.state.tabNames;
         let tabIconNames = this.state.tabIconNames;
@@ -57,9 +56,9 @@ export default class MainActivity extends Component {
                 }
                 }>
 
-                <RecomView />
+                <RecomView navigation={this.props.navigation} />
                 <SeriesView ref='seriesView' />
-                <RankView ref='rankView'/>
+                <RankView ref='rankView' />
                 <ClassifyView />
             </ScrollableTabView>
         );
