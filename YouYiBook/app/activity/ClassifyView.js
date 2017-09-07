@@ -25,6 +25,7 @@ import {
     // LoadMoreStatus //上拉加载状态 用于自定义上拉加载视图时使用
 } from 'react-native-swRefresh';
 import { CachedImage } from "react-native-img-cache";
+var navigate = null;
 export default class RecomandActivity extends Component {
     constructor(props) {
         super(props);
@@ -37,6 +38,7 @@ export default class RecomandActivity extends Component {
     }
 
     componentDidMount() {
+        navigate = this.props.navigation;
         let timer = setTimeout(() => {
             clearTimeout(timer)
             this.refs.listView.beginRefresh()
@@ -86,6 +88,9 @@ export default class RecomandActivity extends Component {
     }
     //点击列表点击每一行
     clickItem(item, index) {
+        navigate('BookDetailView', {
+            book_id: item.book_id
+        });
     }
     // 返回国内法规Item
     _renderSearchItem = (itemData, index) => {

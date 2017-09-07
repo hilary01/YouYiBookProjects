@@ -13,7 +13,9 @@ const TITLELOG = require('../img/title_logo.png');
 const FITERIMG = require('../img/btn_titel_filter.png');
 export default class PublicTitle extends Component {
 
-
+    constructor(props) {
+        super(props);
+    }
 
 
     render() {
@@ -29,7 +31,7 @@ export default class PublicTitle extends Component {
                 <View style={styles.left_view} >
 
                     <TouchableOpacity onPress={() => this.props._backOnclick()} >
-                        <Image style={styles.left_icon} source={BACKICON}></Image>
+                        <Image style={styles.left_icon} source={this.props.leftIcon}></Image>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.textview}>
@@ -39,7 +41,12 @@ export default class PublicTitle extends Component {
                 <View style={styles.right_view} >
                     <TouchableOpacity onPress={() => this.props._finishOnlcik()} >
 
-                        <Image style={styles.right_icon} source={this.props.finishIcon}></Image>
+                        <Image style={{
+                            marginRight: 10,
+                            justifyContent: 'center',
+                            width: this.props.imgWidth,
+                            height: this.props.imgHeight
+                        }} source={this.props.finishIcon}></Image>
 
                     </TouchableOpacity>
 
@@ -73,15 +80,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
-        width: 30
     },
-    right_icon: {
-        width: 39,
-        height: 30,
-        marginRight: 10,
-        justifyContent: 'center'
-
-    }, left_view: {
+    left_view: {
         justifyContent: 'flex-start',
         alignItems: 'center',
         width: 30,

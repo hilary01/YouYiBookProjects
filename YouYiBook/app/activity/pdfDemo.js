@@ -6,7 +6,6 @@ import RNFS from 'react-native-fs';
 const pdfDownloadURL = 'http://image.tianjimedia.com/imagelist/2009/190/caq4z56jadof.pdf';
 var { height, width } = Dimensions.get('window');
 var count = 1;
-import Toast, { DURATION } from 'react-native-easy-toast';
 var index = 1;
 export default class PdfDemo extends Component {
     constructor(props) {
@@ -113,7 +112,6 @@ export default class PdfDemo extends Component {
                         });
                     }}
                     style={styles.pdf} />
-                <Toast ref="toast" />
             </ScrollView>
         )
     }

@@ -226,6 +226,7 @@ export default class RecomandActivity extends Component {
                     customRefreshViewHeight={0} //自定义刷新视图时必须指定高度*/
 
                 />
+              
             </View>
 
 

@@ -57,9 +57,9 @@ export default class MainActivity extends Component {
                 }>
 
                 <RecomView navigation={this.props.navigation} />
-                <SeriesView ref='seriesView' />
-                <RankView ref='rankView' />
-                <ClassifyView />
+                <SeriesView ref='seriesView' navigation={this.props.navigation} />
+                <RankView ref='rankView' navigation={this.props.navigation} />
+                <ClassifyView navigation={this.props.navigation} />
             </ScrollableTabView>
         );
     }

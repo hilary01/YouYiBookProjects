@@ -4,7 +4,7 @@ const MENUIMG = require('../img/menu_btn.png');
 const TITLELOG = require('../img/title_logo.png');
 const SEARCHIMG = require('../img/btn_titel_search.png');
 const FITERIMG = require('../img/btn_titel_filter.png');
-export default class PublicTitle extends Component {
+export default class PublicMainTitle extends Component {
 
 
 
@@ -37,7 +37,7 @@ export default class PublicTitle extends Component {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => this.props._searchOnlcik()} >
 
-                        <Image style={styles.right_icon} source={SEARCHIMG}></Image>
+                        <Image style={{ width: this.props.width, height: this.props.height,marginRight:5 }} source={this.props.rightIcon}></Image>
 
                     </TouchableOpacity>
 

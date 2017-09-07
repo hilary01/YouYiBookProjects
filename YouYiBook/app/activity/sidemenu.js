@@ -26,15 +26,18 @@ import {
 } from 'react-native';
 import SideMenu from 'react-native-side-menu';
 import Menu from '../activity/menu'; //导入菜单组件
-import PublicTitle from '../activity/book_main_title';
+import MainPublicTitle from '../activity/book_main_title';
 import Global from '../utils/global';
 const uri_image_menu = 'http://image18-c.poco.cn/mypoco/myphoto/20160605/09/17351665220160605093956066.png';
 const FITERIMG = require('../img/btn_titel_filter.png');
 const { width, height } = Dimensions.get('window');
-import Toast, { DURATION } from 'react-native-easy-toast';
 const menuView = null;
-import MainActivity from '../main'
+import MainActivity from '../main';
+import LoginActivity from '../activity/CenterLoginView';
 var isFristLoad = true;
+const SEARCHIMG = require('../img/btn_titel_search.png');
+const OUTLOGINICON = require('../img/btn_logout.png');
+const FINDPASSICON = require('../img/btn_title_findpwd.png');
 export default class SideMenus extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -45,8 +48,19 @@ export default class SideMenus extends Component {
         this.state = {
             isOpen: false,
             showFilter: false,
-            whichFlag: 1
+            whichFlag: 1,
+            menuIndex: 0,
+            outLogin: false,
+            rightIcons: FINDPASSICON,
+            width: 39,
+            height: 30
         };
+    }
+    componentDidMount() {
+
+        if (Global.isLogin == undefined) {
+            Global.isLogin = false;
+        }
     }
 
 
@@ -62,14 +76,34 @@ export default class SideMenus extends Component {
 
     }
     menuCallBack(menu) {
-        var menuEntity = Global.menuEntity;
+
         this.setState({
             isOpen: false,
 
         });
-        // alert(menuEntity.name);
+        var icon;
+        Global.menuEntity = menu;
+        var out_login = menu.id == 3 ? true : false;
+        if (Global.isLogin == true && menu.id == 3) {
+
+            icon = OUTLOGINICON;
+        } else if (Global.isLogin == false && menu.id == 3) {
+            icon = FINDPASSICON
+
+        } else {
+            icon = SEARCHIMG
+        }
+        var width = (Global.isLogin == false && menu.id == 3) ? 56 : 39;
+        this.setState({
+            outLogin: out_login,
+            rightIcons: icon,
+            menuIndex: Global.menuEntity.id,
+            width: width
+        })
+
     }
     onMenuItemOnclik = () => {
+
         var isOp = this.state.isOpen;
         this.setState({
             isOpen: !isOp,
@@ -102,6 +136,13 @@ export default class SideMenus extends Component {
         var flag = this.state.whichFlag;
         this.refs.mainView.updateUi(obj, flag);
     }
+    _changeRightIcon = () => {
+
+        this.setState({
+            rightIcons: OUTLOGINICON,
+            width: 39
+        })
+    }
     fiterIcon = (flag, arg) => {
 
         this.setState({
@@ -111,14 +152,44 @@ export default class SideMenus extends Component {
     }
     searchOnlcik = () => {
 
+        if (this.state.outLogin == true) {
+
+            alert('退出登录');
+
+        } else {
+            const { navigate } = this.props.navigation;
+            navigate('searchView');
+        }
+    }
+
+    showView() {
         const { navigate } = this.props.navigation;
-        navigate('searchView');
+        switch (this.state.menuIndex) {
+            case 0://书城
+                return <MainActivity changeIcon={this.fiterIcon.bind(this)} ref='mainView' navigation={navigate} />
+                break
+            case 1://书架
+                return <Text>书架</Text>
+                break
+            case 2://购物车
+                return <Text>购物车</Text>
+                break
+            case 3://个人中心
+                return <LoginActivity _changeRightIcon={this._changeRightIcon.bind(this)} />
+                break
+            case 4://游逸天下
+                return <Text>游逸天下</Text>
+                break
+            case 5://更多
+                return <Text>更多</Text>
+                break
+        }
+
     }
 
     render() {
         menuView = <Menu ref='menuV' onItemSelected={this.menuCallBack.bind(this)} />
         var menuEntity = Global.menuEntity;
-        const { navigate } = this.props.navigation;
         return (
             <SideMenu
                 menu={menuView}
@@ -134,12 +205,11 @@ export default class SideMenus extends Component {
                         barStyle={'default'}
                         networkActivityIndicatorVisible={true}
                     />
-                    <PublicTitle _menuOnclick={() => this.onMenuItemOnclik()} _filterIconOnlcik={() => this.fiterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} filterIcon={this.state.showFilter == true ? FITERIMG : null} />
+                    <MainPublicTitle _menuOnclick={() => this.onMenuItemOnclik()} _filterIconOnlcik={() => this.fiterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} filterIcon={this.state.showFilter == true ? FITERIMG : null} rightIcon={(this.state.outLogin == true || Global.isLogin == true) ? this.state.rightIcons : SEARCHIMG} width={this.state.width} height={30} />
                     <View style={{ height: 1, width: width, backgroundColor: '#00B11D' }} />
-                    <MainActivity changeIcon={this.fiterIcon.bind(this)} ref='mainView' navigation={navigate} />
+                    {this.showView()}
 
                 </View>
-                <Toast ref="toast" />
             </SideMenu>
         );
 

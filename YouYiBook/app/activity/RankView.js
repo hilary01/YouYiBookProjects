@@ -33,6 +33,7 @@ var menus = ['销售量', '出版时间', '收藏', '关注度'];
 var publisherId = '';
 var provinceId = '';
 var cityId = '';
+var navigate = null;
 import Global from '../utils/global';
 export default class RankActivity extends Component {
     constructor(props) {
@@ -59,13 +60,18 @@ export default class RankActivity extends Component {
         this.getData(rankType);
     }
     componentDidMount() {
+        navigate = this.props.navigation;
         let timer = setTimeout(() => {
             clearTimeout(timer)
             this.refs.listView.beginRefresh()
         }, 500) //自动调用开始刷新 新增方法
-        publisherId = Global.publishId;
-        provinceId = Global.provinceId;
-        cityId = Global.cityId;
+        if (undefined != Global.publishId && undefined != Global.provinceId && undefined != Global.cityId) {
+            publisherId = Global.publishId;
+            provinceId = Global.provinceId;
+            cityId = Global.cityId;
+
+        }
+
         this.initMenu();
         this.getData(rankType);
     }
@@ -254,6 +260,10 @@ export default class RankActivity extends Component {
     }
     //点击列表点击每一行
     clickItem(item, index) {
+        navigate('BookDetailView', {
+            book_id: item.book_id
+        });
+
     }
     // 返回国内法规Item
     _renderSearchItem = (itemData, index) => {

@@ -93,17 +93,10 @@ export default class Menu extends Component {
     _changeMenuData(selectIndexs) {
         var menuList = this.state.menuData;
         if (this.props.onItemSelected(menuList[selectIndexs]));
-        InteractionManager.runAfterInteractions(() => {
-            this.setState({
+        this.setState({
 
-                selectIndex: selectIndexs
-            });
-            Global.menuEntity = menuList[selectIndexs];
-
+            selectIndex: selectIndexs
         });
-
-
-
 
     }
     _renderItem(itemData) {

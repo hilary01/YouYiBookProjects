@@ -28,6 +28,7 @@ import {
 import { CachedImage } from "react-native-img-cache";
 import Global from '../utils/global';
 var keyWord = '';
+const BACKICON = require('../img/btn_titel_back.png');
 import PublicTitle from '../activity/book_public_title';
 export default class SearchResultActivity extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
@@ -195,7 +196,7 @@ export default class SearchResultActivity extends Component {
                     barStyle={'default'}
                     networkActivityIndicatorVisible={true}
                 />
-                <PublicTitle _backOnclick={() => this.backOnclik()} _finishOnlcik={() => this.finishOnlcik()} title={keyWord} finishIcon={null} />
+                <PublicTitle _backOnclick={() => this.backOnclik()} _finishOnlcik={() => this.finishOnlcik()} title={keyWord} finishIcon={null} leftIcon={BACKICON}  />
                 <SwRefreshListView
                     dataSource={this.state.dataListViewSource}
                     ref="listView"

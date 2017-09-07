@@ -21,7 +21,8 @@ export default class CustomButton extends Component {
                     backgroundColor: this.props.bgColor,
                     borderRadius: 5,
                     width: this.props.btnWidth,
-                    height: this.props.btnHeight
+                    height: this.props.btnHeight,
+                    marginRight:10
 
                 }}>
                     <TouchableOpacity onPress={() => this.props._BtnOnlcik()} activeOpacity={0.8}  >

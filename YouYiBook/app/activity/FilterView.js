@@ -15,6 +15,7 @@ import PublicTitle from '../activity/book_public_title';
 const ITEMICON = require('../img/bookstore_lead_sign.png');
 const FINISHICON = require('../img/btn_titel_finish.png');
 import CityPicker from '../view/city_picker';
+const BACKICON = require('../img/btn_titel_back.png');
 export default class FilterActivity extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -97,7 +98,7 @@ export default class FilterActivity extends Component {
                     barStyle={'default'}
                     networkActivityIndicatorVisible={true}
                 />
-                <PublicTitle _backOnclick={() => this.backOnclik()} _finishOnlcik={() => this.finishOnlcik()} title='筛选' finishIcon={FINISHICON} />
+                <PublicTitle _backOnclick={() => this.backOnclik()} _finishOnlcik={() => this.finishOnlcik()} title='筛选' leftIcon={BACKICON} finishIcon={FINISHICON} imgWidth={39} imgHeight={30} />
                 <View style={{ height: 1, width: width, backgroundColor: '#00B11D' }} />
                 <View style={styles.main_bg}>
                     <TouchableOpacity activeOpacity={0.8} onPress={() => this._goPublishActivity()}>

@@ -27,6 +27,7 @@ var provinceId = '';
 var cityId = '';
 const BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/series_query';
 import { CachedImage } from "react-native-img-cache";
+var navigate = null;
 export default class SeriesActivity extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -48,6 +49,7 @@ export default class SeriesActivity extends Component {
         this._data = [];
     }
     componentDidMount() {
+        navigate = this.props.navigation;
         if (undefined != Global.publishId && undefined != Global.provinceId && undefined != Global.cityId) {
             publisherId = Global.publishId;
             provinceId = Global.provinceId;
@@ -58,9 +60,13 @@ export default class SeriesActivity extends Component {
     }
 
     updateUi(obj) {
-        publisherId = Global.publishId;
-        provinceId = Global.provinceId;
-        cityId = Global.cityId;
+        if (undefined != Global.publishId && undefined != Global.provinceId && undefined != Global.cityId) {
+            publisherId = Global.publishId;
+            provinceId = Global.provinceId;
+            cityId = Global.cityId;
+
+        }
+
         console.log(publisherId, provinceId, cityId);
         this._data = [];
         pageNum = 0;
@@ -214,13 +220,21 @@ export default class SeriesActivity extends Component {
 
 
     }
+    //点击列表点击每一行
+    clickItem(item, index) {
+        navigate('BookDetailView', {
+            book_id: item.book_id
+        });
+
+    }
     _renderBook(i, bookEntity) {
-        return <View key={i} style={{ height: 120, alignItems: 'center', margin: 2, width: (width - 20) / 4 }}>
-            <CachedImage style={{ height: 100, width: (width - 40) / 4 }} source={{ uri: bookEntity.book_icon }} />
-            <Text style={{ padding: 2, width: (width - 20) / 4, textAlign: 'center' }} numberOfLines={1}>{bookEntity.book_name}</Text>
+        return <TouchableOpacity activeOpacity={0.8} onPress={() => this.clickItem(bookEntity, i)} >
+            <View key={i} style={{ height: 120, alignItems: 'center', margin: 2, width: (width - 20) / 4 }}>
+                <CachedImage style={{ height: 100, width: (width - 40) / 4 }} source={{ uri: bookEntity.book_icon }} />
+                <Text style={{ padding: 2, width: (width - 20) / 4, textAlign: 'center' }} numberOfLines={1}>{bookEntity.book_name}</Text>
 
-        </View>
-
+            </View>
+        </TouchableOpacity>
 
 
     }

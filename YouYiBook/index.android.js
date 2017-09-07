@@ -26,7 +26,6 @@ import {
 const uri_image_menu = 'http://image18-c.poco.cn/mypoco/myphoto/20160605/09/17351665220160605093956066.png';
 
 const { width, height } = Dimensions.get('window');
-import Toast, { DURATION } from 'react-native-easy-toast';
 import PdfRead from './app/activity/pdfDemo';
 import SideMenus from './app/activity/App';
 class YouYiBook extends Component {
