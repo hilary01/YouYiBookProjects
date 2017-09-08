@@ -27,7 +27,7 @@ export default class PublicMainTitle extends Component {
                 </View>
                 <View style={styles.textview}>
                     <Image source={TITLELOG} style={{ height: 32, width: 32 }} />
-                    <Text style={styles.textstyle} numberOfLines={1}>游逸书城</Text>
+                    <Text style={styles.textstyle} numberOfLines={1}>{this.props.title}</Text>
                 </View>
                 <View style={styles.right_view} >
                     <TouchableOpacity onPress={() => this.props._filterIconOnlcik()} >
@@ -37,7 +37,7 @@ export default class PublicMainTitle extends Component {
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => this.props._searchOnlcik()} >
 
-                        <Image style={{ width: this.props.width, height: this.props.height,marginRight:5 }} source={this.props.rightIcon}></Image>
+                        <Image style={{ width: this.props.width, height: this.props.height, marginRight: 5 }} source={this.props.rightIcon}></Image>
 
                     </TouchableOpacity>
 

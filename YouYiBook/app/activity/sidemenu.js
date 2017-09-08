@@ -34,10 +34,12 @@ const { width, height } = Dimensions.get('window');
 const menuView = null;
 import MainActivity from '../main';
 import LoginActivity from '../activity/CenterLoginView';
+import BookShelfActivity from '../activity/BookShelfView';
 var isFristLoad = true;
 const SEARCHIMG = require('../img/btn_titel_search.png');
 const OUTLOGINICON = require('../img/btn_logout.png');
 const FINDPASSICON = require('../img/btn_title_findpwd.png');
+const FINDBOOKICON = require('../img/btn_title_findback.png');
 export default class SideMenus extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -51,9 +53,11 @@ export default class SideMenus extends Component {
             whichFlag: 1,
             menuIndex: 0,
             outLogin: false,
-            rightIcons: FINDPASSICON,
+            rightIcons: SEARCHIMG,
             width: 39,
-            height: 30
+            height: 30,
+            titleName: '游逸书城',
+            filterIcon: null
         };
     }
     componentDidMount() {
@@ -84,21 +88,43 @@ export default class SideMenus extends Component {
         var icon;
         Global.menuEntity = menu;
         var out_login = menu.id == 3 ? true : false;
+        var width;
+        var filterIconImg;
         if (Global.isLogin == true && menu.id == 3) {
 
             icon = OUTLOGINICON;
+            width = 39;
+            filterIconImg = null;
         } else if (Global.isLogin == false && menu.id == 3) {
-            icon = FINDPASSICON
-
+            icon = FINDPASSICON;
+            width = 56;
+            filterIconImg = null;
         } else {
-            icon = SEARCHIMG
+            if (menu.id == 0) {
+                icon = SEARCHIMG;
+                width = 39;
+                filterIconImg = null;
+
+            } else if (menu.id == 2 || menu.id == 4 || menu.id == 5) {
+
+                icon = null;
+                width = 0;
+                filterIconImg = null;
+            } else if (menu.id == 1) {
+
+                icon = FINDBOOKICON;
+                width = 39;
+                filterIconImg = null;
+
+            }
         }
-        var width = (Global.isLogin == false && menu.id == 3) ? 56 : 39;
         this.setState({
             outLogin: out_login,
             rightIcons: icon,
             menuIndex: Global.menuEntity.id,
-            width: width
+            width: width,
+            titleName: menu.name,
+            filterIcon: filterIconImg,
         })
 
     }
@@ -111,20 +137,26 @@ export default class SideMenus extends Component {
         });
     }
     fiterOnlcik = () => {
-        const { navigate } = this.props.navigation;
-        navigate('filterView', {
-            // 跳转的时候携带一个参数去下个页面
-            callback: (publishId, provinceId, cityId) => {
-                var obj = new Object();
-                obj.pId = publishId;
-                obj.prId = provinceId;
-                obj.cId = cityId;
-                Global.publishId = publishId;
-                Global.provinceId = provinceId;
-                Global.cityId = cityId;
-                this._updateData(obj);
-            }
-        });
+        if (this.state.menuIndex == 0) {
+
+            const { navigate } = this.props.navigation;
+            navigate('filterView', {
+                // 跳转的时候携带一个参数去下个页面
+                callback: (publishId, provinceId, cityId) => {
+                    var obj = new Object();
+                    obj.pId = publishId;
+                    obj.prId = provinceId;
+                    obj.cId = cityId;
+                    Global.publishId = publishId;
+                    Global.provinceId = provinceId;
+                    Global.cityId = cityId;
+                    this._updateData(obj);
+                }
+            });
+        } else {
+
+            alert('删除操作');
+        }
     }
     /**
      * 
@@ -143,22 +175,34 @@ export default class SideMenus extends Component {
             width: 39
         })
     }
-    fiterIcon = (flag, arg) => {
 
+    fiterIcon = (flag, arg) => {
+        var filter = flag == true ? FITERIMG : null;
         this.setState({
+            filterIcon: filter,
             showFilter: flag,
             whichFlag: arg
         })
     }
     searchOnlcik = () => {
 
-        if (this.state.outLogin == true) {
+        if (this.state.menuIndex == 1) {
 
-            alert('退出登录');
+            alert('找回操作');
 
         } else {
-            const { navigate } = this.props.navigation;
-            navigate('searchView');
+            if (this.state.outLogin == true) {
+                alert('退出登录成功');
+                Global.isLogin = false;
+                this.setState({
+                    rightIcons: FINDPASSICON,
+                    width: 56
+                })
+
+            } else {
+                const { navigate } = this.props.navigation;
+                navigate('searchView');
+            }
         }
     }
 
@@ -169,7 +213,7 @@ export default class SideMenus extends Component {
                 return <MainActivity changeIcon={this.fiterIcon.bind(this)} ref='mainView' navigation={navigate} />
                 break
             case 1://书架
-                return <Text>书架</Text>
+                return <BookShelfActivity navigation={navigate}/>
                 break
             case 2://购物车
                 return <Text>购物车</Text>
@@ -189,7 +233,6 @@ export default class SideMenus extends Component {
 
     render() {
         menuView = <Menu ref='menuV' onItemSelected={this.menuCallBack.bind(this)} />
-        var menuEntity = Global.menuEntity;
         return (
             <SideMenu
                 menu={menuView}
@@ -205,7 +248,7 @@ export default class SideMenus extends Component {
                         barStyle={'default'}
                         networkActivityIndicatorVisible={true}
                     />
-                    <MainPublicTitle _menuOnclick={() => this.onMenuItemOnclik()} _filterIconOnlcik={() => this.fiterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} filterIcon={this.state.showFilter == true ? FITERIMG : null} rightIcon={(this.state.outLogin == true || Global.isLogin == true) ? this.state.rightIcons : SEARCHIMG} width={this.state.width} height={30} />
+                    <MainPublicTitle title={this.state.titleName} _menuOnclick={() => this.onMenuItemOnclik()} _filterIconOnlcik={() => this.fiterOnlcik()} _searchOnlcik={() => this.searchOnlcik()} filterIcon={this.state.filterIcon} rightIcon={this.state.rightIcons} width={this.state.width} height={30} />
                     <View style={{ height: 1, width: width, backgroundColor: '#00B11D' }} />
                     {this.showView()}
 

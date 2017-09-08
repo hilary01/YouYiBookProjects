@@ -32,6 +32,7 @@ const LABLENOICON = require('../img/null_image.png');
 import { toastShort } from '../utils/ToastUtil';
 var bookIds;
 import Global from '../utils/global';
+import DeviceStorage from '../utils/deviceStorage';
 export default class BookDetail extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -308,8 +309,71 @@ export default class BookDetail extends Component {
 
     }
     onClick(flag) {
+        switch (flag) {
+            case '0'://电子书价格
+                this._addBookInShelf();
+                break;
+            case '1'://电子书阅读
+                break;
+            case '2'://纸质书价格
+                break;
+            case '3'://加入购物车
+                break;
+            case '4'://纸质书阅读
+                break;
+        }
 
+    }
 
+    /**
+     * 免费图书加入书架
+     */
+    _addBookInShelf() {
+
+        var bookEntity = this.state.detailEntity;
+        var isAdd = false;
+        var that = this;
+        // DeviceStorage.delete('book_shelf_key');
+        // DeviceStorage.delete(bookEntity.book_id);
+        if (null != bookEntity && bookEntity.isfree == '1') {
+            DeviceStorage.get(bookEntity.book_id, function (jsonValue) {
+              
+                isAdd = jsonValue.isAdd;
+            });
+            console.log(isAdd);
+            if (!isAdd) {
+
+                that._getBookInfo(bookEntity);
+
+            }
+
+        } else {
+
+            toastShort('支付购买的图书');
+        }
+
+    }
+    _getBookInfo(books) {
+
+        var bookList = [];
+        var obj = new Object();
+        obj.isAdd = true;
+        DeviceStorage.get('book_shelf_key', function (jsonValue) {
+            if (null != jsonValue) {
+                bookList = jsonValue;
+                console.log(jsonValue);
+                bookList.push(books);
+                DeviceStorage.save('book_shelf_key', bookList);
+                DeviceStorage.save(books.book_id, obj);
+
+            } else {
+                bookList.push(books);
+                DeviceStorage.save('book_shelf_key', bookList);
+                DeviceStorage.save(books.book_id, obj);
+            }
+            toastShort('加入书架成功！');
+
+        });
     }
     // 返回国内法规Item
     _renderBook = (detail) => {
