@@ -333,19 +333,26 @@ export default class BookDetail extends Component {
         var bookEntity = this.state.detailEntity;
         var isAdd = false;
         var that = this;
-        // DeviceStorage.delete('book_shelf_key');
-        // DeviceStorage.delete(bookEntity.book_id);
         if (null != bookEntity && bookEntity.isfree == '1') {
             DeviceStorage.get(bookEntity.book_id, function (jsonValue) {
-              
-                isAdd = jsonValue.isAdd;
+                console.log('jsonValue=' + jsonValue);
+                if (jsonValue != null) {
+
+                    isAdd = jsonValue.isAdd;
+                    if (!isAdd) {
+                        that._getBookInfo(bookEntity);
+                    } else {
+
+                        toastShort('已经加入书架了！');
+                    }
+                } else {
+                    that._getBookInfo(bookEntity);
+
+                }
+
+
+
             });
-            console.log(isAdd);
-            if (!isAdd) {
-
-                that._getBookInfo(bookEntity);
-
-            }
 
         } else {
 
@@ -365,7 +372,6 @@ export default class BookDetail extends Component {
                 bookList.push(books);
                 DeviceStorage.save('book_shelf_key', bookList);
                 DeviceStorage.save(books.book_id, obj);
-
             } else {
                 bookList.push(books);
                 DeviceStorage.save('book_shelf_key', bookList);

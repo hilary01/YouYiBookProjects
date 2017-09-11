@@ -23,65 +23,45 @@ import StringUtil from '../utils/StringUtil';
 import Dimensions from 'Dimensions';
 var screenW = Dimensions.get('window').width;
 // var RETURN_ICON = require('./images/tabs/icon_return.png');
+import DeviceStorage from '../utils/deviceStorage';
+import { CachedImage } from "react-native-img-cache";
+import { toastShort } from '../utils/ToastUtil';
+import RNFS from 'react-native-fs';
+var navigate = null;
 export default class BookShelfActivity extends Component {
-
     constructor(props) {
         super(props);
         this.state = {
             show: false,
             dataSource: new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 }),
+            isPdfDownload: false,
+            pageCount: 1,
 
         };
         this._data = [];
     }
 
     componentDidMount() {
-        // this.getData();
+        navigate = this.props.navigation;
+        this.getBookShelfList();
     }
     componentWillUnmount() {
-
+        this._data = [];
     }
 
-    getData() {
-
-
-        if (!this.state.show_foot) {
-
-            this.setState({
-                show: true
-            });
-        }
-        StringBufferUtils.init();
-        StringBufferUtils.append('userid=' + Global.userId);
-        StringBufferUtils.append('&&status=' + typeId);
-        StringBufferUtils.append('&&pageNo=' + pageNum);
-        StringBufferUtils.append('&&recordsperpage=' + 10);
-        let params = StringBufferUtils.toString();
-        this.fetchData(params);
-
-
-    }
-    fetchData(param) {
-        //get请求,以百度为例,没有参数,没有header
+    getBookShelfList() {
         var that = this;
-        NetUitl.post(BASEURL, param, '', function (set) {
-            //下面的就是请求来的数据
-            if (null != set && set.return_code == '0') {
-                totalPage = set.totalPage;
-                that.addItemKey(set.result);
-                pageNum++;
-            } else {
-                that.setState({
-                    show: false
-                });
 
+        this.setState({
+            show: true
+        });
+        DeviceStorage.get('book_shelf_key', function (jsonValue) {
+            if (null != jsonValue) {
+                console.log(jsonValue);
+                that.addItemKey(jsonValue);
             }
 
-
-
-
-        })
-
+        });
     }
     //整合数据
     addItemKey(rulelist) {
@@ -91,7 +71,7 @@ export default class BookShelfActivity extends Component {
             //整合法规数据
 
             for (var i = 0; i < rulelist.length; i++) {
-                rulelist[i].key = rulelist[i].id;
+                rulelist[i].key = rulelist[i].book_id;
 
             }
 
@@ -113,9 +93,23 @@ export default class BookShelfActivity extends Component {
 
     }
     deleteRow(data, rowId) {
-        // rowMap[`${secId}${rowId}`].closeRow();
+        var that = this;
+        this.setState({
+            show: true
 
-        this.deleteMethord(data.id, rowId);
+        })
+        DeviceStorage.delete(data.book_id, function (result) {
+
+            if (result == '0') {
+
+                that.deleteMethord(data.book_id, rowId);
+            } else {
+
+                toastShort('删除失败！');
+            }
+        });
+
+
     }
 
     /**
@@ -123,44 +117,17 @@ export default class BookShelfActivity extends Component {
      * @param {*} id 
      */
     deleteMethord(id, rowId) {
+        var list = this._data;
+        //移除列表中下标为index的项
+        delete list[rowId];
+        //更新列表的状态
+        this._data = list;
         this.setState({
-            show: true
-
-        })
-        StringBufferUtils.init();
-        StringBufferUtils.append('id=' + id);
-        let params = StringBufferUtils.toString();
-        this.deleteData(params, rowId);
-    }
-    deleteData(param, rowId) {
-        //get请求,以百度为例,没有参数,没有header
-        var that = this;
-        NetUitl.post(DELETE_URL, param, '', function (set) {
-            //下面的就是请求来的数据
-            if (null != set && set.return_code == '0') {
-                var list = that._data;
-                //移除列表中下标为index的项
-                delete list[rowId];
-                //更新列表的状态
-                that._data = list;
-                that.setState({
-                    dataSource: that.state.dataSource.cloneWithRows(list),
-                    show: false
-                });
-                ToastAndroid.show(set.msg, ToastAndroid.SHORT);
-            } else {
-                ToastAndroid.show(set.msg, ToastAndroid.SHORT);
-                that.setState({
-                    show: false
-                });
-
-            }
-
-
-
-
-        })
-
+            dataSource: this.state.dataSource.cloneWithRows(list),
+            show: false
+        });
+        this._filterData(list);
+        toastShort('删除成功！');
     }
     _backOnclick() {
         this.props.navigator.pop(
@@ -171,17 +138,47 @@ export default class BookShelfActivity extends Component {
 
     }
 
+    _filterData(list) {
 
+        var tempList = [];
+        if (null != list) {
+
+            for (var j = 0; j < list.length; j++) {
+
+                if (null != list[j]) {
+
+                    tempList.push(list[j]);
+                }
+
+            }
+            DeviceStorage.save('book_shelf_key', tempList);
+        }
+
+    }
 
     //点击列表点击每一行
     clickItem(item) {
-        // this.props.navigator.push({
-        //     component: CopyRightDetail,
-        //     params: {
-        //         detail_id: item.id
+        // var DownloadFileOptions = {
+        //     fromUrl: item.freeread_url,          // URL to download file from
+        //     toFile: RNFS.DocumentDirectoryPath + '/' + item.book_id + '.pdf', // Local filesystem path to save the file to
+        //     begin: function (val) {
+        //         toastShort('下载开始');
+        //     },
+        //     progress: function (val) {
+        //         tempLength = parseInt(val.bytesWritten);
+        //         totalSize = parseInt(val.contentLength);
+        //         toastShort('tempLength=' + tempLength + 'totalSize=' + totalSize);
+        //         if (tempLength + '' == totalSize + '') {
 
-        //     }
-        // })
+        //             // that.refs.toast.show('下载完成', 1000);
+        //         }
+        //     },
+        // }
+        // var result = RNFS.downloadFile(DownloadFileOptions);
+      
+        navigate('PdfReadView', {
+            book_id: item.book_id
+        });
     }
     _separator = () => {
         return <View style={{ height: 1, backgroundColor: '#e2e2e2' }} />;
@@ -195,7 +192,7 @@ export default class BookShelfActivity extends Component {
                 <TouchableOpacity onPress={() => this.clickItem(itemData, index)} activeOpacity={0.8}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <CachedImage style={{ height: 80, width: 60, marginLeft: 10 }} source={{ uri: itemData.book_icon }} />
-                        <View style={{ height: 100, flexDirection: 'column', justifyContent: 'center' }}>
+                        <View style={{ height: 100, flexDirection: 'column', justifyContent: 'center', marginLeft: 10 }}>
                             <Text style={styles.news_item_title} numberOfLines={1}>{itemData.book_name}</Text>
                             <Text style={styles.rule_item_time}>作者:{itemData.book_author}</Text>
                             <Text style={styles.rule_item_time} numberOfLines={1}>出版社:{itemData.publisher_name}</Text>
@@ -279,7 +276,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#DDD',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        height: 90,
+        height: 100,
     },
     backRightBtn: {
         alignItems: 'center',
@@ -294,9 +291,9 @@ const styles = StyleSheet.create({
         right: 60,
     },
     backRightBtnRight: {
-        backgroundColor: '#ff9602',
+        backgroundColor: 'red',
         right: 0,
-        height: 88,
+        height: 100,
         marginTop: 1,
 
     },

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import  {
+import {
     AsyncStorage
 } from 'react-native';
 
@@ -53,7 +53,17 @@ export default class DeviceStorage extends React.Component {
      * @param key
      * @returns {*}
      */
-    static delete(key) {
-        return AsyncStorage.removeItem(key);
+    static delete(key, callBack) {
+        AsyncStorage.removeItem(
+            key,
+            (error) => {
+                if (!error) {
+                    callBack('0');
+                } else {
+
+                    callBack('1');
+                }
+            }
+        )
     }
 }

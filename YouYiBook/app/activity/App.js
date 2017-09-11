@@ -32,6 +32,7 @@ import LoginActivity from '../activity/LoginView';
 import RegistActivity from '../activity/RegistView';
 import CenterLoginActivity from '../activity/CenterLoginView';
 import BookShelfActivity from '../activity/BookShelfView';
+import PdfReadActivity from '../activity/PdfReaderView';
 /**
  * 1、Test1是通过普通的属性创建的Tabbar和导航
  * 2、Test2是在页面中通过属性创建Tabbar和导航
@@ -100,8 +101,11 @@ const MyNav = StackNavigator({
     BookShelfView: {
 
         screen: BookShelfActivity
-    }
+    },
+    PdfReadView: {
 
+        screen: PdfReadActivity
+    }
 
 
 }, {
