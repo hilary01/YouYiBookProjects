@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#1FA82D',
         textAlign: 'center',
-        paddingLeft: 10,
+        paddingLeft: 5,
     },
     right_view: {
         flexDirection: 'row',

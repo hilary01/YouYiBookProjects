@@ -15,6 +15,7 @@ var index = 1;
 var pdfPath = '';
 const BACKICON = require('../img/btn_titel_back.png');
 import PublicTitle from '../activity/book_public_title';
+import LoadView from '../view/loading';
 export default class PdfReadView extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -23,8 +24,10 @@ export default class PdfReadView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isPdfDownload: false,
             pageCount: 1,
+            pdf_path: '',
+            showPdf: false,
+            show: false,
         };
         this.pdfView = null;
         // RNFS.DocumentDirectoryPath
@@ -32,7 +35,17 @@ export default class PdfReadView extends Component {
 
     componentDidMount() {
         pdfPath = RNFS.DocumentDirectoryPath + '/' + this.props.navigation.state.params.book_id + '.pdf';
-        alert(pdfPath);
+        // pdfPath=RNFS.ExternalStorageDirectoryPath +'/test.pdf';
+        if (pdfPath != null) {
+
+            this.setState({
+                pdf_path: pdfPath,
+                showPdf: true,
+                show: true
+
+            })
+        }
+
     }
 
     //3秒之后缩放1.5倍
@@ -77,9 +90,20 @@ export default class PdfReadView extends Component {
 
     }
     render() {
+        // var pages = [];
+        // for (var i = 2; i < this.state.pageCount + 1; i++) {
+        //     pages.push(
+        //         <PDFView ref={(pdf) => { this.pdfView = pdf; }}
+        //             key={"sop" + i}
+        //             path={this.state.pdf_path}
+        //             pageNumber={i}
+        //             style={styles.pdf} />
+        //     );
+        // }
 
         return (
             <View state={styles.page}>
+                {this.state.show == true ? (<LoadView />) : (null)}
                 <StatusBar
                     animated={true}
                     hidden={false}
@@ -97,18 +121,27 @@ export default class PdfReadView extends Component {
                     onScrollBeginDrag={() => { this._onScrollBeginDrag() }}
                     //结束拖拽  
                     onScrollEndDrag={() => { this._onScrollEndDrag() }}  >
-                    <PDFView ref={(pdf) => { this.pdfView = pdf; }}
-                        key="sop"
-                        path={this.pdfPath}
-                        pageNumber={this.state.pageCount}
-                        style={styles.pdf}
-                        onLoadComplete={(pageCount) => {
-                            count = pageCount;
-                            this.pdfView.setNativeProps({
-                                zoom: 1.5
-                            });
-                        }}
-                        style={styles.pdf} />
+                    {this.state.showPdf == true ?
+                        <PDFView ref={(pdf) => { this.pdfView = pdf; }}
+                            key="sop"
+                            path={this.state.pdf_path}
+                            pageNumber={1}
+                            style={styles.pdf}
+                            onLoadComplete={(pageCounts) => {
+                                count = pageCounts;
+                                this.pdfView.setNativeProps({
+                                    zoom: 1.5
+                                });
+                                this.setState({
+
+                                    show: false,
+                                    pageCount: pageCounts
+                                })
+                            }}
+                            style={styles.pdf} /> : null}
+                    {/* {pages.map((elem, index) => {
+                        return elem;
+                    })} */}
                 </ScrollView>
             </View>
         )
@@ -122,10 +155,12 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     pdfcontainer: {
-        height: height
+        height: height,
+
     },
     pdf: {
-        height: height
+        height: height,
+        backgroundColor: 'red'
     }, page: {
         height: height,
         backgroundColor: '#DEDEDE'

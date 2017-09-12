@@ -11,22 +11,23 @@ import {
     Image,
     InteractionManager,
     FlatList,
-    ToastAndroid
+    Dimensions
+
 } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import LoadView from '../view/loading';
 import NetUitl from '../utils/netUitl';
+var { height, width } = Dimensions.get('window');
 import StringBufferUtils from '../utils/StringBufferUtil';
 var BASEURL = 'http://drmlum.rdgchina.com/drmapp/copyright/list';
 import Global from '../utils/global';
 import StringUtil from '../utils/StringUtil';
-import Dimensions from 'Dimensions';
-var screenW = Dimensions.get('window').width;
 // var RETURN_ICON = require('./images/tabs/icon_return.png');
 import DeviceStorage from '../utils/deviceStorage';
 import { CachedImage } from "react-native-img-cache";
 import { toastShort } from '../utils/ToastUtil';
 import RNFS from 'react-native-fs';
+import PercentageCircle from 'react-native-percentage-circle';
 var navigate = null;
 export default class BookShelfActivity extends Component {
     constructor(props) {
@@ -36,6 +37,8 @@ export default class BookShelfActivity extends Component {
             dataSource: new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 }),
             isPdfDownload: false,
             pageCount: 1,
+            percent: 0,
+            percentShow: false
 
         };
         this._data = [];
@@ -158,30 +161,83 @@ export default class BookShelfActivity extends Component {
 
     //点击列表点击每一行
     clickItem(item) {
-        // var DownloadFileOptions = {
-        //     fromUrl: item.freeread_url,          // URL to download file from
-        //     toFile: RNFS.DocumentDirectoryPath + '/' + item.book_id + '.pdf', // Local filesystem path to save the file to
-        //     begin: function (val) {
-        //         toastShort('下载开始');
-        //     },
-        //     progress: function (val) {
-        //         tempLength = parseInt(val.bytesWritten);
-        //         totalSize = parseInt(val.contentLength);
-        //         toastShort('tempLength=' + tempLength + 'totalSize=' + totalSize);
-        //         if (tempLength + '' == totalSize + '') {
+        var that = this;
 
-        //             // that.refs.toast.show('下载完成', 1000);
-        //         }
-        //     },
-        // }
-        // var result = RNFS.downloadFile(DownloadFileOptions);
-      
-        navigate('PdfReadView', {
-            book_id: item.book_id
+
+        DeviceStorage.get(item.book_id + '.pdf', function (jsonValue) {
+            if (jsonValue != null) {
+
+                var isDownLoad = jsonValue.isDownLoad;
+                if (!isDownLoad) {
+                    that._downLoadMethord(item);
+                } else {
+
+                    navigate('PdfReadView', {
+                        book_id: item.book_id
+                    });
+
+                }
+            } else {
+                that._downLoadMethord(item);
+
+            }
+
+
+
         });
+
+
+
+
+    }
+
+    _downLoadMethord(item) {
+        var that = this;
+        that.setState({
+            show: true,
+        });
+        var DownloadFileOptions = {
+            fromUrl: item.freeread_url,          // URL to download file from
+            toFile: RNFS.DocumentDirectoryPath + '/' + item.book_id + '.pdf', // Local filesystem path to save the file to
+            begin: function (val) {
+                toastShort('下载开始');
+            },
+            progress: function (val) {
+                tempLength = parseInt(val.bytesWritten);
+                totalSize = parseInt(val.contentLength);
+                percents = (tempLength / totalSize).toFixed(2);
+                if ((percents * 100) > 99) {
+                    that.setState({
+                        show: false
+                    });
+                    var obj = new Object();
+                    obj.isDownLoad = true;
+                    toastShort('下载完成');
+                    navigate('PdfReadView', {
+                        book_id: item.book_id
+                    });
+                    DeviceStorage.save(item.book_id + '.pdf', obj);
+                }
+            },
+        }
+        var result = RNFS.downloadFile(DownloadFileOptions);
     }
     _separator = () => {
         return <View style={{ height: 1, backgroundColor: '#e2e2e2' }} />;
+    }
+    onClickListener(flag,item) {
+
+        switch (flag) {
+            case '0'://分享
+                break;
+            case '1'://评论
+            navigate('CommentView', {
+                book_id: item.book_id
+            });
+                break;
+
+        }
+
     }
 
 
@@ -190,15 +246,30 @@ export default class BookShelfActivity extends Component {
         return (
             <View style={{ height: 100, justifyContent: 'center', marginTop: 1, backgroundColor: 'white' }}>
                 <TouchableOpacity onPress={() => this.clickItem(itemData, index)} activeOpacity={0.8}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <CachedImage style={{ height: 80, width: 60, marginLeft: 10 }} source={{ uri: itemData.book_icon }} />
-                        <View style={{ height: 100, flexDirection: 'column', justifyContent: 'center', marginLeft: 10 }}>
-                            <Text style={styles.news_item_title} numberOfLines={1}>{itemData.book_name}</Text>
-                            <Text style={styles.rule_item_time}>作者:{itemData.book_author}</Text>
-                            <Text style={styles.rule_item_time} numberOfLines={1}>出版社:{itemData.publisher_name}</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: width, alignItems: 'flex-end' }}>
 
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <CachedImage style={{ height: 80, width: 60, marginLeft: 10 }} source={{ uri: itemData.book_icon }} />
+                            <View style={{ height: 100, flexDirection: 'column', justifyContent: 'center', marginLeft: 10 }}>
+                                <Text style={styles.news_item_title} numberOfLines={1}>{itemData.book_name}</Text>
+                                <Text style={styles.rule_item_time}>作者:{itemData.book_author}</Text>
+                                <Text style={styles.rule_item_time} numberOfLines={1}>出版社:{itemData.publisher_name}</Text>
+
+                            </View>
                         </View>
+                        <View style={{width: 80, height: 45, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
 
+                            <TouchableOpacity activeOpacity={0.8} onPress={() => this.onClickListener('0',itemData)}>
+                                <View style={{ width: 24, height: 24, alignItems: 'center' }}>
+                                    < Image source={require('../img/books_shelf_share_btn.png')} style={{ height: 18, width: 19 }} />
+                                </View>
+                            </TouchableOpacity>
+                            <TouchableOpacity activeOpacity={0.8} onPress={() => this.onClickListener('1',itemData)}>
+                                <View style={{ width: 24, height: 24, alignItems: 'center',marginLeft:10 }}>
+                                    < Image source={require('../img/books_shelf_comment_btn.png')} style={{ height: 18, width: 19 }} />
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </TouchableOpacity>
             </View>
