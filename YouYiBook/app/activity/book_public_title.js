@@ -66,9 +66,8 @@ const styles = StyleSheet.create({
     },
     textview: {
         flexDirection: 'row',
-        alignSelf: 'center',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     textstyle: {
         fontSize: 18,

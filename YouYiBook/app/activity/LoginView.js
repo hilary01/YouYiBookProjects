@@ -77,7 +77,6 @@ export default class LoginActivity extends Component {
                     passWord: jsonValue.passWord
 
                 })
-                console.log(this.state.userName);
 
             }
 
@@ -141,17 +140,8 @@ export default class LoginActivity extends Component {
     }
     _goFindPassActivity() {
 
-        // const { navigate } = this.props.navigation;
-        // navigate('publisherView', {
-        //     // 跳转的时候携带一个参数去下个页面
-        //     callback: (data) => {
-        //         this.setState({
-        //             publishName: data.publisher_name,
-        //             publishId: data.publisher_id
-
-        //         })
-        //     }
-        // });
+        const { navigate } = this.props.navigation;
+        navigate('FindPassView');
 
     }
     onClick(flag) {
@@ -191,7 +181,7 @@ export default class LoginActivity extends Component {
                 <PublicTitle _backOnclick={() => this.backOnclik()} _finishOnlcik={() => this._goFindPassActivity()} title='个人中心' leftIcon={BACKICON} finishIcon={FINISHICON} imgWidth={56} imgHeight={30} />
                 <View style={{ height: 1, width: width, backgroundColor: '#1CA831' }} />
                 <View style={{ backgroundColor: '#A9B6A7', alignItems: 'flex-start', width: width }}>
-                    <Text style={{ padding: 10, textAlign: 'center', color: 'white' }}>上午好，欢迎使用游逸书城</Text>
+                    <Text style={{ padding: 10, textAlign: 'center', color: 'white' }}>您好，欢迎使用游逸书城</Text>
                 </View>
                 <View style={styles.main_bg}>
                     <View style={{ flexDirection: 'row', marginTop: 10, height: 40, alignItems: 'center' }} >

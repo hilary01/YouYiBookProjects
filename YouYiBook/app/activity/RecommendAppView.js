@@ -11,7 +11,7 @@ import {
     Image,
     InteractionManager,
     FlatList,
-    Dimensions
+    Dimensions,
 
 } from 'react-native';
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
@@ -19,7 +19,7 @@ import LoadView from '../view/loading';
 import NetUitl from '../utils/netUitl';
 var { height, width } = Dimensions.get('window');
 import StringBufferUtils from '../utils/StringBufferUtil';
-var BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/query_bookshelf';
+var BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/app_recommend';
 import Global from '../utils/global';
 import StringUtil from '../utils/StringUtil';
 // var RETURN_ICON = require('./images/tabs/icon_return.png');
@@ -27,43 +27,23 @@ import DeviceStorage from '../utils/deviceStorage';
 import { CachedImage } from "react-native-img-cache";
 import { toastShort } from '../utils/ToastUtil';
 import RNFS from 'react-native-fs';
-import PercentageCircle from 'react-native-percentage-circle';
 var navigate = null;
-export default class BookShelfActivity extends Component {
+export default class RecommendAppActivity extends Component {
     constructor(props) {
         super(props);
         this.state = {
             show: false,
-            dataSource: new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 }),
-            isPdfDownload: false,
-            pageCount: 1,
-            percent: 0,
-            percentShow: false,
-            userName: '',
+            appList: []
 
         };
-        this._data = [];
     }
 
     componentDidMount() {
         var that = this;
-        DeviceStorage.get('user_info_key', function (jsonValue) {
-            if (null != jsonValue) {
-
-                that.setState({
-                    userName: jsonValue.userName,
-
-                })
-
-            }
-
-
-        });
         navigate = this.props.navigation;
-        this.getBookShelfList();
+        this.getData();
     }
     componentWillUnmount() {
-        this._data = [];
     }
 
     getData() {
@@ -71,9 +51,9 @@ export default class BookShelfActivity extends Component {
             show: true
         });
         StringBufferUtils.init();
-        StringBufferUtils.append('user_id=' + this.state.userName);
-        StringBufferUtils.append('&&page=' + '0');
+        StringBufferUtils.append('page=' + '0');
         StringBufferUtils.append('&&count=' + 100);
+        StringBufferUtils.append('&&type=' + 'android');
         let params = StringBufferUtils.toString();
         this.fetchData(params);
     }
@@ -84,13 +64,8 @@ export default class BookShelfActivity extends Component {
         NetUitl.post(BASEURL, params, '', function (responseData) {
             //下面的就是请求来的数据
             if (null != responseData && responseData.return_code == '0') {
-                // toastShort(responseData.books);
-                if (null != responseData.books && responseData.books.length > 0) {
-                    toastShort('为您找回' + responseData.books.length + '本图书')
 
-                } else {
-                    toastShort('为您找回' + 0 + '本图书')
-                }
+                that.addItemKey(responseData.apps);
                 that.setState({
                     show: false
 
@@ -104,27 +79,7 @@ export default class BookShelfActivity extends Component {
             }
         })
     }
-    updateShelf() {
 
-        this.getData();
-
-
-    }
-
-    getBookShelfList() {
-        var that = this;
-
-        this.setState({
-            show: true
-        });
-        DeviceStorage.get('book_shelf_key', function (jsonValue) {
-            if (null != jsonValue) {
-                console.log(jsonValue);
-                that.addItemKey(jsonValue);
-            }
-
-        });
-    }
     //整合数据
     addItemKey(rulelist) {
         var that = this;
@@ -133,15 +88,14 @@ export default class BookShelfActivity extends Component {
             //整合法规数据
 
             for (var i = 0; i < rulelist.length; i++) {
-                rulelist[i].key = rulelist[i].book_id;
+                rulelist[i].key = i;
 
             }
 
-            that._data = that._data.concat(rulelist);
 
 
             that.setState({
-                dataSource: that.state.dataSource.cloneWithRows(that._data),
+                appList: rulelist,
                 show: false
             });
 
@@ -154,43 +108,7 @@ export default class BookShelfActivity extends Component {
 
 
     }
-    deleteRow(data, rowId) {
-        var that = this;
-        this.setState({
-            show: true
 
-        })
-        DeviceStorage.delete(data.book_id, function (result) {
-
-            if (result == '0') {
-
-                that.deleteMethord(data.book_id, rowId);
-            } else {
-
-                toastShort('删除失败！');
-            }
-        });
-
-
-    }
-
-    /**
-     * 删除版权
-     * @param {*} id 
-     */
-    deleteMethord(id, rowId) {
-        var list = this._data;
-        //移除列表中下标为index的项
-        delete list[rowId];
-        //更新列表的状态
-        this._data = list;
-        this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(list),
-            show: false
-        });
-        this._filterData(list);
-        toastShort('删除成功！');
-    }
     _backOnclick() {
         this.props.navigator.pop(
             {
@@ -200,50 +118,33 @@ export default class BookShelfActivity extends Component {
 
     }
 
-    _filterData(list) {
-
-        var tempList = [];
-        if (null != list) {
-
-            for (var j = 0; j < list.length; j++) {
-
-                if (null != list[j]) {
-
-                    tempList.push(list[j]);
-                }
-
-            }
-            DeviceStorage.save('book_shelf_key', tempList);
-        }
-
-    }
 
     //点击列表点击每一行
     clickItem(item) {
         var that = this;
 
 
-        DeviceStorage.get(item.book_id + '.pdf', function (jsonValue) {
-            if (jsonValue != null) {
+        // DeviceStorage.get(item.book_id + '.pdf', function (jsonValue) {
+        //     if (jsonValue != null) {
 
-                var isDownLoad = jsonValue.isDownLoad;
-                if (!isDownLoad) {
-                    that._downLoadMethord(item);
-                } else {
+        //         var isDownLoad = jsonValue.isDownLoad;
+        //         if (!isDownLoad) {
+        //             that._downLoadMethord(item);
+        //         } else {
 
-                    navigate('PdfReadView', {
-                        book_id: item.book_id
-                    });
+        //             navigate('PdfReadView', {
+        //                 book_id: item.book_id
+        //             });
 
-                }
-            } else {
-                that._downLoadMethord(item);
+        //         }
+        //     } else {
+        //         that._downLoadMethord(item);
 
-            }
+        //     }
 
 
 
-        });
+        // });
 
 
 
@@ -287,12 +188,8 @@ export default class BookShelfActivity extends Component {
     onClickListener(flag, item) {
 
         switch (flag) {
-            case '0'://分享
-                break;
-            case '1'://评论
-                navigate('CommentView', {
-                    book_id: item.book_id
-                });
+            case '0'://下载
+                alert('下载文件');
                 break;
 
         }
@@ -303,16 +200,15 @@ export default class BookShelfActivity extends Component {
     // 返回国内法规Item
     _renderSearchItem = (itemData, index) => {
         return (
-            <View style={{ height: 100, justifyContent: 'center', marginTop: 1, backgroundColor: 'white' }}>
+            <View style={{ height: 102, justifyContent: 'center', backgroundColor: 'white' }}>
                 <TouchableOpacity onPress={() => this.clickItem(itemData, index)} activeOpacity={0.8}>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: width, alignItems: 'flex-end' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: width, alignItems: 'center' }}>
 
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <CachedImage style={{ height: 80, width: 60, marginLeft: 10 }} source={{ uri: itemData.book_icon }} />
+                            <CachedImage style={{ height: 80, width: 60, marginLeft: 10 }} source={{ uri: itemData.item.app_icon }} />
                             <View style={{ height: 100, flexDirection: 'column', justifyContent: 'center', marginLeft: 10 }}>
-                                <Text style={styles.news_item_title} numberOfLines={1}>{itemData.book_name}</Text>
-                                <Text style={styles.rule_item_time}>作者:{itemData.book_author}</Text>
-                                <Text style={styles.rule_item_time} numberOfLines={1}>出版社:{itemData.publisher_name}</Text>
+                                <Text style={styles.news_item_title} numberOfLines={1}>{itemData.item.app_name}</Text>
+                                <Text style={styles.rule_item_time}>{itemData.item.app_content}</Text>
 
                             </View>
                         </View>
@@ -320,20 +216,17 @@ export default class BookShelfActivity extends Component {
 
                             <TouchableOpacity activeOpacity={0.8} onPress={() => this.onClickListener('0', itemData)}>
                                 <View style={{ width: 24, height: 24, alignItems: 'center' }}>
-                                    < Image source={require('../img/books_shelf_share_btn.png')} style={{ height: 18, width: 19 }} />
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} onPress={() => this.onClickListener('1', itemData)}>
-                                <View style={{ width: 24, height: 24, alignItems: 'center', marginLeft: 10 }}>
-                                    < Image source={require('../img/books_shelf_comment_btn.png')} style={{ height: 18, width: 19 }} />
+                                    < Image source={require('../img/btn_download.png')} style={{ height: 17, width: 16 }} />
                                 </View>
                             </TouchableOpacity>
                         </View>
                     </View>
+                    <View style={{ height: 1, backgroundColor: '#e2e2e2', width: width }} />
                 </TouchableOpacity>
             </View>
         );
     }
+
     //此函数用于为给定的item生成一个不重复的key
     _keyExtractor = (item, index) => item.key;
     render() {
@@ -341,24 +234,17 @@ export default class BookShelfActivity extends Component {
         return (
             <View style={styles.container}>
                 {this.state.show == true ? (<LoadView />) : (null)}
-                <SwipeListView
-                    dataSource={this.state.dataSource}
-                    renderRow={(data, secId, rowId, rowMap) => (
-                        <SwipeRow
-                            disableLeftSwipe={false}
-                            disableRightSwipe={true}
-                            leftOpenValue={0}
-                            rightOpenValue={-80}
-                        >
-                            <View style={styles.rowBack}>
-                                <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={_ => this.deleteRow(data, rowId)}>
-                                    <Text style={styles.backTextWhite}>Delete</Text>
-                                </TouchableOpacity>
-                            </View>
-                            {this._renderSearchItem(data)}
-                        </SwipeRow>
-                    )}
-                />
+                <View style={styles.main_bg}>
+                    <FlatList
+                        ref={(flatList) => this._flatList = flatList}
+                        renderItem={this._renderSearchItem}
+                        keyExtractor={this._keyExtractor}
+                        data={this.state.appList}
+                        extraData={this.state}
+                    >
+                    </FlatList>
+
+                </View>
 
 
             </View>
@@ -453,5 +339,11 @@ const styles = StyleSheet.create({
         textAlignVertical: 'center',
         color: '#ff9602',
         fontSize: 14,
+    }, main_bg: {
+        backgroundColor: 'white',
+        margin: 10,
+
+
+
     }
 });

@@ -128,7 +128,11 @@ export default class CommentView extends Component {
         switch (flag) {
             case '0'://提交
                 if (Global.isLogin != null && Global.isLogin != undefined && Global.isLogin == true) {
-
+                    var content=this.state.content;
+                    if (!stringUtil.isNotEmpty(content)) {
+                        toastShort('请输入评论内容');
+                        return;
+                    }
                     this.submitBtn();
                 } else {
                     const { navigate } = this.props.navigation;

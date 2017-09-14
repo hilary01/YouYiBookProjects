@@ -35,6 +35,9 @@ const menuView = null;
 import MainActivity from '../main';
 import LoginActivity from '../activity/CenterLoginView';
 import BookShelfActivity from '../activity/BookShelfView';
+import PersonInfoActivity from '../activity/PersonView';
+import MoreActivity from '../activity/MoreView';
+import RecommendAppActivity from '../activity/RecommendAppView';
 var isFristLoad = true;
 const SEARCHIMG = require('../img/btn_titel_search.png');
 const OUTLOGINICON = require('../img/btn_logout.png');
@@ -52,12 +55,12 @@ export default class SideMenus extends Component {
             showFilter: false,
             whichFlag: 1,
             menuIndex: 0,
-            outLogin: false,
             rightIcons: SEARCHIMG,
             width: 39,
             height: 30,
             titleName: '游逸书城',
-            filterIcon: null
+            filterIcon: null,
+            showPersonInfo: false
         };
     }
     componentDidMount() {
@@ -87,7 +90,6 @@ export default class SideMenus extends Component {
         });
         var icon;
         Global.menuEntity = menu;
-        var out_login = menu.id == 3 ? true : false;
         var width;
         var filterIconImg;
         if (Global.isLogin == true && menu.id == 3) {
@@ -119,7 +121,6 @@ export default class SideMenus extends Component {
             }
         }
         this.setState({
-            outLogin: out_login,
             rightIcons: icon,
             menuIndex: Global.menuEntity.id,
             width: width,
@@ -155,7 +156,6 @@ export default class SideMenus extends Component {
             });
         } else {
 
-            alert('删除操作');
         }
     }
     /**
@@ -186,23 +186,30 @@ export default class SideMenus extends Component {
     }
     searchOnlcik = () => {
 
-        if (this.state.menuIndex == 1) {
+        if (this.state.menuIndex == 0) {
+            const { navigate } = this.props.navigation;
+            navigate('searchView');
 
-            alert('找回操作');
 
+        } else if (this.state.menuIndex == 3 && Global.isLogin == true) {
+            Global.isLogin = false;
+            this.setState({
+                rightIcons: FINDPASSICON,
+                width: 56,
+                showPersonInfo: false,
+
+            })
+
+        } else if (this.state.menuIndex == 3 && Global.isLogin == false) {
+            const { navigate } = this.props.navigation;
+            navigate('FindPassView');
+
+        } else if (this.state.menuIndex == 1) {
+            this.refs.bookShelf.updateShelf();
         } else {
-            if (this.state.outLogin == true) {
-                alert('退出登录成功');
-                Global.isLogin = false;
-                this.setState({
-                    rightIcons: FINDPASSICON,
-                    width: 56
-                })
+            const { navigate } = this.props.navigation;
+            navigate('searchView');
 
-            } else {
-                const { navigate } = this.props.navigation;
-                navigate('searchView');
-            }
         }
     }
 
@@ -213,22 +220,32 @@ export default class SideMenus extends Component {
                 return <MainActivity changeIcon={this.fiterIcon.bind(this)} ref='mainView' navigation={navigate} />
                 break
             case 1://书架
-                return <BookShelfActivity navigation={navigate}/>
+                return <BookShelfActivity navigation={navigate} ref='bookShelf' />
                 break
             case 2://购物车
                 return <Text>购物车</Text>
                 break
             case 3://个人中心
-                return <LoginActivity _changeRightIcon={this._changeRightIcon.bind(this)} />
+                if (this.state.showPersonInfo == true) {
+
+                    return <PersonInfoActivity  navigation={navigate}/>
+                } else {
+                    return <LoginActivity _changeRightIcon={this._changeRightIcon.bind(this)} _changeView={this.changeView.bind(this)} />
+                }
                 break
             case 4://游逸天下
-                return <Text>游逸天下</Text>
+                return <RecommendAppActivity />
                 break
             case 5://更多
-                return <Text>更多</Text>
+                return <MoreActivity />
                 break
         }
 
+    }
+    changeView() {
+        this.setState({
+            showPersonInfo: true
+        })
     }
 
     render() {
