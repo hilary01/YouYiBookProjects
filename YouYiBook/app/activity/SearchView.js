@@ -192,7 +192,7 @@ export default class SearchActivity extends Component {
                 <StatusBar
                     animated={true}
                     hidden={false}
-                    backgroundColor={'#F3F3F3'}
+                    backgroundColor={'#E1E7E3'}
                     barStyle={'default'}
                     networkActivityIndicatorVisible={true}
                 />
@@ -202,11 +202,11 @@ export default class SearchActivity extends Component {
                         <View style={{ flexDirection: 'row', alignItems: 'center', height: 36, width: width, backgroundColor: '#E1E7E3' }}>
 
                             <TextInput style={{
-                                width: width - 80, height: 30, backgroundColor: 'white', paddingLeft: 35, marginLeft: 20,
-                                borderRadius: 15, borderWidth: 1, borderColor: '#00B11D'
+                                width: width - 80, height: 30, backgroundColor: 'white',  marginLeft: 20,
+                                borderRadius: 15, borderWidth: 1, borderColor: '#00B11D',padding:0,paddingLeft:35
                             }} onChangeText={(keyWord) => this.setState({ keyWord })}
                                 value={this.state.keyWord} placeholderTextColor='#999999' returnKeyType='search'
-                                underlineColorAndroid='transparent' placeholder='搜索书名、作者、出版社等' onSubmitEditing={() => { this._submitBtn() }}>
+                                underlineColorAndroid='transparent' placeholder=' 搜索书名、作者、出版社等' onSubmitEditing={() => { this._submitBtn() }}>
                             </TextInput>
                             <Image style={{ width: 20, height: 20, marginLeft: 30, position: 'absolute' }} source={SEARCHICON} />
                             <View style={{

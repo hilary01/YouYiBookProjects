@@ -463,7 +463,7 @@ export default class BookDetail extends Component {
                         <StatusBar
                             animated={true}
                             hidden={false}
-                            backgroundColor={'#028CE5'}
+                            backgroundColor={'#E1E7E3'}
                             barStyle={'default'}
                             networkActivityIndicatorVisible={true}
                         />

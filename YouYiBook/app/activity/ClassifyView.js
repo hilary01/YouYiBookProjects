@@ -88,8 +88,9 @@ export default class RecomandActivity extends Component {
     }
     //点击列表点击每一行
     clickItem(item, index) {
-        navigate('BookDetailView', {
-            book_id: item.book_id
+        navigate('ClassListView', {
+            class_id: item.classify_id,
+            book_name: item.classify_name
         });
     }
     // 返回国内法规Item

@@ -110,7 +110,7 @@ export default class ModalDropdown extends Component {
   _updatePosition(callback) {
     if (this._button && this._button.measure) {
       this._button.measure((fx, fy, width, height, px, py) => {
-        this._buttonFrame = {x: px, y: py, w: width, h: height};
+        this._buttonFrame = { x: px, y: py, w: width, h: height };
         callback && callback();
       });
     }
@@ -152,15 +152,15 @@ export default class ModalDropdown extends Component {
   _renderButton() {
     return (
       <TouchableOpacity ref={button => this._button = button}
-                        disabled={this.props.disabled}
-                        accessible={this.props.accessible}
-                        onPress={this._onButtonPress.bind(this)}>
+        disabled={this.props.disabled}
+        accessible={this.props.accessible}
+        onPress={this._onButtonPress.bind(this)}>
         {
           this.props.children ||
           (
             <View style={styles.button}>
               <Text style={[styles.buttonText, this.props.textStyle]}
-                    numberOfLines={1}>
+                numberOfLines={1}>
                 {this.state.buttonText}
               </Text>
             </View>
@@ -183,13 +183,13 @@ export default class ModalDropdown extends Component {
       let animationType = this.props.animated ? 'fade' : 'none';
       return (
         <Modal animationType={animationType}
-               visible={true}
-               transparent={true}
-               onRequestClose={this._onRequestClose.bind(this)}
-               supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}>
+          visible={true}
+          transparent={true}
+          onRequestClose={this._onRequestClose.bind(this)}
+          supportedOrientations={['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right']}>
           <TouchableWithoutFeedback accessible={this.props.accessible}
-                                    disabled={!this.state.showDropdown}
-                                    onPress={this._onModalPress.bind(this)}>
+            disabled={!this.state.showDropdown}
+            onPress={this._onModalPress.bind(this)}>
             <View style={styles.modal}>
               <View style={[styles.dropdown, this.props.dropdownStyle, frameStyle]}>
                 {this.state.loading ? this._renderLoading() : this._renderDropdown()}
@@ -253,18 +253,18 @@ export default class ModalDropdown extends Component {
 
   _renderLoading() {
     return (
-      <ActivityIndicator size='small'/>
+      <ActivityIndicator size='small' />
     );
   }
 
   _renderDropdown() {
     return (
       <ListView style={styles.list}
-                dataSource={this._dataSource}
-                renderRow={this._renderRow.bind(this)}
-                renderSeparator={this.props.renderSeparator || this._renderSeparator.bind(this)}
-                automaticallyAdjustContentInsets={false}
-                showsVerticalScrollIndicator={this.props.showsVerticalScrollIndicator}
+        dataSource={this._dataSource}
+        renderRow={this._renderRow.bind(this)}
+        renderSeparator={this.props.renderSeparator || this._renderSeparator.bind(this)}
+        automaticallyAdjustContentInsets={false}
+        showsVerticalScrollIndicator={this.props.showsVerticalScrollIndicator}
       />
     );
   }
@@ -296,45 +296,45 @@ export default class ModalDropdown extends Component {
       onPress: () => this._onRowPress(rowData, sectionID, rowID, highlightRow),
     };
     if (TOUCHABLE_ELEMENTS.find(name => name == row.type.displayName)) {
-      var props = {...row.props};
+      var props = { ...row.props };
       props.key = preservedProps.key;
       props.onPress = preservedProps.onPress;
       switch (row.type.displayName) {
         case 'TouchableHighlight':
-        {
-          return (
-            <TouchableHighlight {...props}>
-              {row.props.children}
-            </TouchableHighlight>
-          );
-        }
+          {
+            return (
+              <TouchableHighlight {...props}>
+                {row.props.children}
+              </TouchableHighlight>
+            );
+          }
           break;
         case 'TouchableOpacity':
-        {
-          return (
-            <TouchableOpacity {...props}>
-              {row.props.children}
-            </TouchableOpacity>
-          );
-        }
+          {
+            return (
+              <TouchableOpacity {...props}>
+                {row.props.children}
+              </TouchableOpacity>
+            );
+          }
           break;
         case 'TouchableWithoutFeedback':
-        {
-          return (
-            <TouchableWithoutFeedback {...props}>
-              {row.props.children}
-            </TouchableWithoutFeedback>
-          );
-        }
+          {
+            return (
+              <TouchableWithoutFeedback {...props}>
+                {row.props.children}
+              </TouchableWithoutFeedback>
+            );
+          }
           break;
         case 'TouchableNativeFeedback':
-        {
-          return (
-            <TouchableNativeFeedback {...props}>
-              {row.props.children}
-            </TouchableNativeFeedback>
-          );
-        }
+          {
+            return (
+              <TouchableNativeFeedback {...props}>
+                {row.props.children}
+              </TouchableNativeFeedback>
+            );
+          }
           break;
         default:
           break;
@@ -369,7 +369,7 @@ export default class ModalDropdown extends Component {
   _renderSeparator(sectionID, rowID, adjacentRowHighlighted) {
     let key = `spr_${rowID}`;
     return (<View style={styles.separator}
-                  key={key}
+      key={key}
     />);
   }
 }
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     position: 'absolute',
-    height: (33 + StyleSheet.hairlineWidth) * 5,
+    height: 70,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'lightgray',
     borderRadius: 2,
@@ -398,6 +398,7 @@ const styles = StyleSheet.create({
   },
   list: {
     //flexGrow: 1,
+    backgroundColor: 'red',
   },
   rowText: {
     paddingHorizontal: 6,

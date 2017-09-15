@@ -36,7 +36,7 @@ const LABLENOICON = require('../img/null_image.png');
 import CustomBtn from '../view/CustomButton';
 var menus = ['未支付', '已支付'];
 import ModalDropdown from '../view/ModalDropdown';
-const DEMO_OPTIONS_1 = ['电子书账单', '纸质书账单'];
+const DEMO_OPTIONS_1 = ['电子书订单', '纸质书订单'];
 export default class OrderViewActivity extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -335,9 +335,18 @@ export default class OrderViewActivity extends Component {
 
     }
     _dropdown_6_onSelect(idx, value) {
-        // this.setState({
-        //   dropdown_6_icon_heart: !this.state.dropdown_6_icon_heart,
-        // })
+        orderType = idx == 0 ? '0' : '1';
+        var txt = idx == 0 ? '电子书订单' : '纸质书订单';
+        this.setState({
+            title: txt
+        })
+        this._data = [];
+        pageNum = 0;
+        this.setState({
+            dataListViewSource: this.state.dataListViewSource.cloneWithRows(this._data),
+            show: true
+        });
+        this.getData(orderType, orderStatus);
     }
 
     render() {
@@ -355,13 +364,6 @@ export default class OrderViewActivity extends Component {
                     networkActivityIndicatorVisible={true}
                 />
                 <View style={styles.container}>
-                    <StatusBar
-                        animated={true}
-                        hidden={false}
-                        backgroundColor={'#028CE5'}
-                        barStyle={'default'}
-                        networkActivityIndicatorVisible={true}
-                    />
                     <View style={styles.left_view} >
 
                         <TouchableOpacity onPress={() => this.backOnclik()} >
@@ -373,7 +375,6 @@ export default class OrderViewActivity extends Component {
                         <Text style={styles.textstyle} numberOfLines={1}>{this.state.title}</Text>
                         <ModalDropdown style={styles.dropdown_6}
                             options={DEMO_OPTIONS_1}
-                            dropdownTextHighlightStyle={{height:30}}
                             onSelect={(idx, value) => this._dropdown_6_onSelect(idx, value)}>
                             <Image style={styles.dropdown_6_image}
                                 source={dropdown_6_icon}

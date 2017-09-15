@@ -74,8 +74,12 @@ export default class PersonViewActivity extends Component {
 
                 break;
             case '1'://消费记录
+                navigate('ConsumeView', {
+                });
                 break;
             case '2'://我的收藏
+            navigate('FavoriteView', {
+            });
                 break;
             case '3'://收货地址
                 break;

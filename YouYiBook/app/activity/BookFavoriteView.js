@@ -19,48 +19,30 @@ import LoadView from '../view/loading';
 import NetUitl from '../utils/netUitl';
 var { height, width } = Dimensions.get('window');
 import StringBufferUtils from '../utils/StringBufferUtil';
-var BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/query_bookshelf';
+var BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/query_favorite';
+const FAVORITESURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/change_favorite';
 import Global from '../utils/global';
 import StringUtil from '../utils/StringUtil';
-// var RETURN_ICON = require('./images/tabs/icon_return.png');
-import DeviceStorage from '../utils/deviceStorage';
 import { CachedImage } from "react-native-img-cache";
 import { toastShort } from '../utils/ToastUtil';
-import RNFS from 'react-native-fs';
-import PercentageCircle from 'react-native-percentage-circle';
-var navigate = null;
-export default class BookShelfActivity extends Component {
+import PublicTitle from '../activity/book_public_title';
+const BACKICON = require('../img/btn_titel_back.png');
+export default class BookFavoriteActivity extends Component {
+    static navigationOptions = ({ navigation, screenProps }) => ({
+        // 这里面的属性和App.js的navigationOptions是一样的。
+        header: null,
+    });
     constructor(props) {
         super(props);
         this.state = {
             show: false,
             dataSource: new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 }),
-            isPdfDownload: false,
-            pageCount: 1,
-            percent: 0,
-            percentShow: false,
-            userName: '',
-
         };
         this._data = [];
     }
 
     componentDidMount() {
-        var that = this;
-        DeviceStorage.get('user_info_key', function (jsonValue) {
-            if (null != jsonValue) {
-
-                that.setState({
-                    userName: jsonValue.userName,
-
-                })
-
-            }
-
-
-        });
-        navigate = this.props.navigation;
-        this.getBookShelfList();
+        this.getData();
     }
     componentWillUnmount() {
         this._data = [];
@@ -71,7 +53,7 @@ export default class BookShelfActivity extends Component {
             show: true
         });
         StringBufferUtils.init();
-        StringBufferUtils.append('user_id=' + this.state.userName);
+        StringBufferUtils.append('user_id=' + Global.userName);
         StringBufferUtils.append('&&page=' + '0');
         StringBufferUtils.append('&&count=' + 100);
         let params = StringBufferUtils.toString();
@@ -83,14 +65,9 @@ export default class BookShelfActivity extends Component {
         console.log(BASEURL + params);
         NetUitl.post(BASEURL, params, '', function (responseData) {
             //下面的就是请求来的数据
+            console.log(responseData);
             if (null != responseData && responseData.return_code == '0') {
-                // toastShort(responseData.books);
-                if (null != responseData.books && responseData.books.length > 0) {
-                    toastShort('为您找回' + responseData.books.length + '本图书')
-
-                } else {
-                    toastShort('为您找回' + 0 + '本图书')
-                }
+                that.addItemKey(responseData.books);
                 that.setState({
                     show: false
 
@@ -103,31 +80,6 @@ export default class BookShelfActivity extends Component {
 
             }
         })
-    }
-    updateShelf() {
-
-        this.getData();
-
-
-    }
-
-    getBookShelfList() {
-        var that = this;
-
-        this.setState({
-            show: true
-        });
-        DeviceStorage.get('book_shelf_key', function (jsonValue) {
-            if (null != jsonValue) {
-                console.log(jsonValue);
-                that.addItemKey(jsonValue);
-            }else{
-                that.setState({
-                    show: false
-                });
-            }
-
-        });
     }
     //整合数据
     addItemKey(rulelist) {
@@ -164,18 +116,7 @@ export default class BookShelfActivity extends Component {
             show: true
 
         })
-        DeviceStorage.delete(data.book_id, function (result) {
-
-            if (result == '0') {
-
-                that.deleteMethord(data.book_id, rowId);
-            } else {
-
-                toastShort('删除失败！');
-            }
-        });
-
-
+        that.getFavoritesData(data.book_id, '2', rowId);
     }
 
     /**
@@ -192,117 +133,61 @@ export default class BookShelfActivity extends Component {
             dataSource: this.state.dataSource.cloneWithRows(list),
             show: false
         });
-        this._filterData(list);
         toastShort('删除成功！');
-    }
-    _backOnclick() {
-        this.props.navigator.pop(
-            {
-
-            }
-        );
 
     }
+    getFavoritesData(bookId, operation, rowId) {
+        this.setState({
+            show: true
+        });
+        StringBufferUtils.init();
+        StringBufferUtils.append('user_id=' + Global.userName);
+        StringBufferUtils.append('&&book_id=' + bookId);
+        StringBufferUtils.append('&&type=' + 'android');
+        StringBufferUtils.append('&&operation=' + operation);
+        let params = StringBufferUtils.toString();
+        this.fetchFavoritesData(params, operation, bookId, rowId);
+    }
+    // 数据请求
+    fetchFavoritesData(params, operation, book_id, rowId) {
+        var that = this;
+        console.log(FAVORITESURL + params);
+        NetUitl.post(FAVORITESURL, params, '', function (responseData) {
+            console.log(responseData);
+            //下面的就是请求来的数据
+            if (null != responseData && responseData.return_code == '0') {
+                that.deleteMethord(book_id, rowId);
+                that.setState({
+                    show: false
 
-    _filterData(list) {
+                })
 
-        var tempList = [];
-        if (null != list) {
+            } else {
+                if (null != responseData && responseData.return_code == '400') {
 
-            for (var j = 0; j < list.length; j++) {
+                    const { navigate } = this.props.navigation;
+                    navigate('LoginView', {
+                    });
 
-                if (null != list[j]) {
-
-                    tempList.push(list[j]);
                 }
+                that.setState({
+                    show: false
+                });
 
             }
-            DeviceStorage.save('book_shelf_key', tempList);
-        }
-
+        })
     }
-
     //点击列表点击每一行
     clickItem(item) {
-        var that = this;
-
-
-        DeviceStorage.get(item.book_id + '.pdf', function (jsonValue) {
-            if (jsonValue != null) {
-
-                var isDownLoad = jsonValue.isDownLoad;
-                if (!isDownLoad) {
-                    that._downLoadMethord(item);
-                } else {
-
-                    navigate('PdfReadView', {
-                        book_id: item.book_id
-                    });
-
-                }
-            } else {
-                that._downLoadMethord(item);
-
-            }
-
-
-
+        const { navigate } = this.props.navigation;
+        navigate('BookDetailView', {
+            book_id: item.book_id
         });
-
-
-
-
     }
 
-    _downLoadMethord(item) {
-        var that = this;
-        that.setState({
-            show: true,
-        });
-        var DownloadFileOptions = {
-            fromUrl: item.freeread_url,          // URL to download file from
-            toFile: RNFS.DocumentDirectoryPath + '/' + item.book_id + '.pdf', // Local filesystem path to save the file to
-            begin: function (val) {
-                toastShort('下载开始');
-            },
-            progress: function (val) {
-                tempLength = parseInt(val.bytesWritten);
-                totalSize = parseInt(val.contentLength);
-                percents = (tempLength / totalSize).toFixed(2);
-                if ((percents * 100) > 99) {
-                    that.setState({
-                        show: false
-                    });
-                    var obj = new Object();
-                    obj.isDownLoad = true;
-                    toastShort('下载完成');
-                    navigate('PdfReadView', {
-                        book_id: item.book_id
-                    });
-                    DeviceStorage.save(item.book_id + '.pdf', obj);
-                }
-            },
-        }
-        var result = RNFS.downloadFile(DownloadFileOptions);
-    }
     _separator = () => {
         return <View style={{ height: 1, backgroundColor: '#e2e2e2' }} />;
     }
-    onClickListener(flag, item) {
-
-        switch (flag) {
-            case '0'://分享
-                break;
-            case '1'://评论
-                navigate('CommentView', {
-                    book_id: item.book_id
-                });
-                break;
-
-        }
-
-    }
-
 
     // 返回国内法规Item
     _renderSearchItem = (itemData, index) => {
@@ -313,25 +198,21 @@ export default class BookShelfActivity extends Component {
 
                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                             <CachedImage style={{ height: 80, width: 60, marginLeft: 10 }} source={{ uri: itemData.book_icon }} />
-                            <View style={{ height: 100, flexDirection: 'column', justifyContent: 'center', marginLeft: 10 }}>
-                                <Text style={styles.news_item_title} numberOfLines={1}>{itemData.book_name}</Text>
+                            <View style={{ height: 100, flexDirection: 'column', justifyContent: 'center', marginLeft: 5 }}>
+                                <Text style={styles.news_item_title} numberOfLines={2}>{itemData.book_name}</Text>
                                 <Text style={styles.rule_item_time}>作者:{itemData.book_author}</Text>
-                                <Text style={styles.rule_item_time} numberOfLines={1}>出版社:{itemData.publisher_name}</Text>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+
+                                    <Text style={{ color: '#999999', paddingLeft: 20, }}>价格:</Text>
+                                    <Text style={{ color: '#00B11D' }}>¥{itemData.e_price}</Text>
+                                    <Text style={{ color: '#999999' }}>(电)</Text>
+                                    <Text style={{ color: '#00B11D', paddingLeft: 10, }}>¥{itemData.p_price}</Text>
+                                    <Text style={{ color: '#999999' }}>(纸)</Text>
+                                </View>
+
+                                <Text style={styles.rule_item_time} numberOfLines={1}>{itemData.intro}</Text>
 
                             </View>
-                        </View>
-                        <View style={{ width: 80, height: 45, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' }}>
-
-                            <TouchableOpacity activeOpacity={0.8} onPress={() => this.onClickListener('0', itemData)}>
-                                <View style={{ width: 24, height: 24, alignItems: 'center' }}>
-                                    < Image source={require('../img/books_shelf_share_btn.png')} style={{ height: 18, width: 19 }} />
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={0.8} onPress={() => this.onClickListener('1', itemData)}>
-                                <View style={{ width: 24, height: 24, alignItems: 'center', marginLeft: 10 }}>
-                                    < Image source={require('../img/books_shelf_comment_btn.png')} style={{ height: 18, width: 19 }} />
-                                </View>
-                            </TouchableOpacity>
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -339,12 +220,27 @@ export default class BookShelfActivity extends Component {
         );
     }
     //此函数用于为给定的item生成一个不重复的key
+    backOnclik = () => {
+        const { goBack } = this.props.navigation;
+        goBack();
+    }
     _keyExtractor = (item, index) => item.key;
+    finishOnlcik = () => {
+
+    }
     render() {
         let self = this;
         return (
             <View style={styles.container}>
                 {this.state.show == true ? (<LoadView />) : (null)}
+                <StatusBar
+                    animated={true}
+                    hidden={false}
+                    backgroundColor={'#F3F3F3'}
+                    barStyle={'default'}
+                    networkActivityIndicatorVisible={true}
+                />
+                <PublicTitle _backOnclick={() => this.backOnclik()} _finishOnlcik={() => this.finishOnlcik()} title='我的收藏' finishIcon={null} leftIcon={BACKICON} />
                 <SwipeListView
                     dataSource={this.state.dataSource}
                     renderRow={(data, secId, rowId, rowMap) => (

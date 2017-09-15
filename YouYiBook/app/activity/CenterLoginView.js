@@ -208,9 +208,9 @@ export default class CenterLoginActivity extends Component {
                 </View>
                 <View style={{ width: width, alignItems: 'center', marginTop: 20 }}>
 
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center',marginLeft:10 }}>
 
-                        <CustomBtn textColor='white' textSize={14} btnTxt='登录' _BtnOnlcik={() => this.onClick('1')} bgColor='#E2320E' btnWidth={width - 60} btnHeight={30} />
+                        <CustomBtn textColor='white' textSize={14} btnTxt='登录' _BtnOnlcik={() => this.onClick('1')} bgColor='#E2320E' btnWidth={width - 40} btnHeight={30} />
                     </View>
                 </View>
             </View>

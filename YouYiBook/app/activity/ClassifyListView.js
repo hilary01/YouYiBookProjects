@@ -15,7 +15,7 @@ import NetUitl from '../utils/netUitl';
 import LoadView from '../view/loading';
 import StringBufferUtils from '../utils/StringBufferUtil';
 import stringUtil from '../utils/StringUtil';
-const BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/searchBook'
+const BASEURL = 'http://121.42.238.246:8080/unitrip_bookstore/bookstore/queryBook'
 var pageNum = 0;
 var isLastPage = false;
 const TITLELOG = require('../img/title_logo.png');
@@ -27,10 +27,14 @@ import {
 } from 'react-native-swRefresh';
 import { CachedImage } from "react-native-img-cache";
 import Global from '../utils/global';
-var keyWord = '';
+var classId = '';
 const BACKICON = require('../img/btn_titel_back.png');
 import PublicTitle from '../activity/book_public_title';
-export default class SearchResultActivity extends Component {
+var publisherId = '';
+var provinceId = '';
+var cityId = '';
+const FITERIMG = require('../img/btn_titel_filter.png');
+export default class ClassifyListActivity extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
         header: null,
@@ -41,6 +45,7 @@ export default class SearchResultActivity extends Component {
             show: true,
             isLoadMore: false,
             dataListViewSource: new ListView.DataSource({ rowHasChanged: (row1, row2) => row1 !== row2 }),
+            bookName: ''
         }
         this._data = [];
     }
@@ -49,15 +54,24 @@ export default class SearchResultActivity extends Component {
             clearTimeout(timer)
             this.refs.listView.beginRefresh()
         }, 500) //自动调用开始刷新 新增方法
-        keyWord = this.props.navigation.state.params.keyword;
+        classId = this.props.navigation.state.params.class_id;
+        var title = this.props.navigation.state.params.book_name;
         this.setState({
-            show: true
+            show: true,
+            bookName: title
         });
-        this.getData(keyWord);
+        this.getData(classId);
     }
-    getData(keyword) {
+    componentWillUnmount() {
+        this._data = [];
+        pageNum = 0;
+    }
+    getData(classId) {
         StringBufferUtils.init();
-        StringBufferUtils.append('keywords=' + keyword);
+        StringBufferUtils.append('classify_id=' + classId);
+        StringBufferUtils.append('&&publisher_id=' + publisherId);
+        StringBufferUtils.append('&&province=' + provinceId);
+        StringBufferUtils.append('&&city=' + cityId);
         StringBufferUtils.append('&&page=' + pageNum);
         StringBufferUtils.append('&&count=' + 10);
         let params = StringBufferUtils.toString();
@@ -173,7 +187,7 @@ export default class SearchResultActivity extends Component {
      * @param {*下拉加载更多} end 
      */
     _onLoadMore(end) {
-        this.getData(keyWord);
+        this.getData(classId);
         end(!isLastPage)// 假设加载4页后数据全部加载完毕 加载成功后需要调用end结束刷新  
 
 
@@ -187,7 +201,24 @@ export default class SearchResultActivity extends Component {
     }
     _keyExtractor = (item, index) => item.key;
     finishOnlcik = () => {
+        var that = this;
+        const { navigate } = this.props.navigation;
+        navigate('filterView', {
+            // 跳转的时候携带一个参数去下个页面
+            callback: (pId, prId, cId) => {
+                publisherId = pId;
+                provinceId = prId;
+                cityId = cId;
+                that._data = [];
+                pageNum = 0;
+                this.setState({
+                    show: true,
+                    dataListViewSource: that.state.dataListViewSource.cloneWithRows(this._data),
+                });
+                that.getData(classId);
 
+            }
+        });
     }
     render() {
         return (
@@ -201,7 +232,7 @@ export default class SearchResultActivity extends Component {
                     barStyle={'default'}
                     networkActivityIndicatorVisible={true}
                 />
-                <PublicTitle _backOnclick={() => this.backOnclik()} _finishOnlcik={() => this.finishOnlcik()} title={keyWord} finishIcon={null} leftIcon={BACKICON} />
+                <PublicTitle _backOnclick={() => this.backOnclik()} _finishOnlcik={() => this.finishOnlcik()} title={this.state.bookName} finishIcon={FITERIMG} leftIcon={BACKICON} imgWidth={39} imgHeight={30} />
                 <View style={{ height: 1, width: width, backgroundColor: '#1CA831' }} />
                 <SwRefreshListView
                     dataSource={this.state.dataListViewSource}
