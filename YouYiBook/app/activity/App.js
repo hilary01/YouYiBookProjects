@@ -42,6 +42,9 @@ import OrderActivity from '../activity/OrderView';
 import consumeActivity from '../activity/ConsumeRecoderView';
 import FavoriteActivity from '../activity/BookFavoriteView';
 import ClassListActivity from '../activity/ClassifyListView';
+import AddressActivity from '../activity/BookAddressView';
+import EditAddressActivity from '../activity/EditAddressView';
+import UserInfoActivity from '../activity/UserInfoView';
 /**
  * 1、Test1是通过普通的属性创建的Tabbar和导航
  * 2、Test2是在页面中通过属性创建Tabbar和导航
@@ -149,7 +152,17 @@ const MyNav = StackNavigator({
     },
     ClassListView: {
         screen: ClassListActivity
+    },
+    AddressView: {
+        screen: AddressActivity
+    },
+    EditAddressView: {
+        screen: EditAddressActivity
+    },
+    UserInfoView: {
+        screen: UserInfoActivity
     }
+
 
 
 }, {

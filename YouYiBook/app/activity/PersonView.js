@@ -78,12 +78,16 @@ export default class PersonViewActivity extends Component {
                 });
                 break;
             case '2'://我的收藏
-            navigate('FavoriteView', {
-            });
+                navigate('FavoriteView', {
+                });
                 break;
             case '3'://收货地址
+                navigate('AddressView', {
+                });
                 break;
             case '4'://账户管理
+                navigate('UserInfoView', {
+                });
                 break;
             case '5'://系统消息
                 break;

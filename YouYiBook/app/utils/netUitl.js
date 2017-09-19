@@ -2,10 +2,10 @@
  * NetUitl 网络请求的实现
  * https://github.com/facebook/react-native
  */
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import {
-    ToastAndroid,
 } from 'react-native';
+import { toastShort } from '../utils/ToastUtil';
 export default class NetUitl extends React.Component {
 
 
@@ -73,7 +73,7 @@ export default class NetUitl extends React.Component {
                 callback(response.json())
             })
             .catch((err) => {
-                ToastAndroid.show('服务器异常，请稍后再试！', ToastAndroid.SHORT);
+                toastShort('服务器异常，请稍后再试！');
                 callback(err)
             }).done();
     }
@@ -110,8 +110,8 @@ export default class NetUitl extends React.Component {
             .then((responseJSON) => {
                 callback(responseJSON)
             }).catch((err) => {
-            ToastAndroid.show('服务器异常，请稍后再试！', ToastAndroid.SHORT);
-        }).done();
+                toastShort('服务器异常，请稍后再试！');
+            }).done();
     }
 
     static postMtheord(url, params, headers, callback) {
@@ -128,15 +128,15 @@ export default class NetUitl extends React.Component {
             .then((responseJSON) => {
                 callback(responseJSON)
             }).catch((err) => {
-            ToastAndroid.show('服务器异常，请稍后再试！', ToastAndroid.SHORT);
-        }).done();
+                toastShort('服务器异常，请稍后再试！');
+            }).done();
     }
 
     static uploadImage(url, path, fileName, callback) {
         let formData = new FormData();
-        let file = {uri: path, type: 'multipart/form-data', name: fileName};
+        let file = { uri: path, type: 'multipart/form-data', name: fileName };
 
-        formData.append("upfile", file);
+        formData.append("up", fileName);
         fetch(url, {
             method: 'POST',
             headers: {
