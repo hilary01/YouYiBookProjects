@@ -76,7 +76,7 @@ export default class UserInfoActivity extends Component {
             company: '',
             menuList: [],
             selectedIndex: '0',
-            registTime: '2016-03-05 10:30',
+            registTime: '',
             showInfo: true,
             userInfoEntity: null,
             show_img: '',
@@ -339,10 +339,10 @@ export default class UserInfoActivity extends Component {
 
 
         let params = StringBufferUtils.toString();
-        this.fetchData(params);
+        this.fetchData(params, type, userInfo);
     }
     // 数据请求
-    fetchData(params) {
+    fetchData(params, type, userInfo) {
         const { navigate, goBack, state } = this.props.navigation;
         var that = this;
         console.log(BASEURL + params);
@@ -350,6 +350,19 @@ export default class UserInfoActivity extends Component {
             //下面的就是请求来的数据
             console.log(responseData);
             if (null != responseData && responseData.return_code == '0') {
+                if (type == '0') {
+                    var userInfos = that.state.userInfoEntity;
+                    userInfos.username = Global.userName;
+                    userInfos.nickname = userInfo.nickname;
+                    userInfos.realname = userInfo.realname;
+                    userInfos.idcard = userInfo.idcard;
+                    userInfos.age = userInfo.age;
+                    userInfos.phone = userInfo.phone;
+                    userInfos.email = userInfo.email;
+                    userInfos.company = userInfo.company;
+                    userInfos.sex = userInfo.sex;
+                    DeviceStorage.save('user_data_key', userInfos);
+                }
                 toastShort('保存成功！');
                 that.setState({
                     show: false

@@ -90,6 +90,8 @@ export default class PersonViewActivity extends Component {
                 });
                 break;
             case '5'://系统消息
+            navigate('MessageView', {
+            });
                 break;
         }
 
