@@ -38,11 +38,14 @@ import BookShelfActivity from '../activity/BookShelfView';
 import PersonInfoActivity from '../activity/PersonView';
 import MoreActivity from '../activity/MoreView';
 import RecommendAppActivity from '../activity/RecommendAppView';
+import GoodsCartActivity from '../activity/GoodsCartView';
 var isFristLoad = true;
 const SEARCHIMG = require('../img/btn_titel_search.png');
 const OUTLOGINICON = require('../img/btn_logout.png');
 const FINDPASSICON = require('../img/btn_title_findpwd.png');
 const FINDBOOKICON = require('../img/btn_title_findback.png');
+const DELETEICON = require('../img/btn_title_del.png');
+const COUNTICON = require('../img/btn_title_payment.png');
 export default class SideMenus extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -60,7 +63,8 @@ export default class SideMenus extends Component {
             height: 30,
             titleName: '游逸书城',
             filterIcon: null,
-            showPersonInfo: false
+            showPersonInfo: false,
+            showGoodsCartIcon: false
         };
     }
     componentDidMount() {
@@ -80,6 +84,13 @@ export default class SideMenus extends Component {
     }
     showToast() {
         // this.refs.toast.show(this.state.selectedItem, 1000);
+
+    }
+    showGoodsCartImg(flag) {
+        this.setState({
+
+            showGoodsCartIcon: flag
+        })
 
     }
     menuCallBack(menu) {
@@ -107,7 +118,7 @@ export default class SideMenus extends Component {
                 width = 39;
                 filterIconImg = null;
 
-            } else if (menu.id == 2 || menu.id == 4 || menu.id == 5) {
+            } else if (menu.id == 4 || menu.id == 5) {
 
                 icon = null;
                 width = 0;
@@ -117,6 +128,12 @@ export default class SideMenus extends Component {
                 icon = FINDBOOKICON;
                 width = 39;
                 filterIconImg = null;
+
+            } else if (menu.id == 2) {
+
+                icon = COUNTICON;
+                width = 45;
+                filterIconImg = DELETEICON;
 
             }
         }
@@ -154,7 +171,9 @@ export default class SideMenus extends Component {
                     this._updateData(obj);
                 }
             });
-        } else {
+        } else if (this.state.menuIndex == 2) {
+
+            this.refs.goodsCart._deleteBook();
 
         }
     }
@@ -174,6 +193,14 @@ export default class SideMenus extends Component {
             rightIcons: OUTLOGINICON,
             width: 39
         })
+    }
+
+    _changeIndex() {
+
+        this.setState({
+            menuIndex: 0
+        })
+        this.refs.menuV.updateItemIndex();
     }
 
     fiterIcon = (flag, arg) => {
@@ -206,6 +233,8 @@ export default class SideMenus extends Component {
 
         } else if (this.state.menuIndex == 1) {
             this.refs.bookShelf.updateShelf();
+        } else if (this.state.menuIndex == 2) {
+            alert('去结算');
         } else {
             const { navigate } = this.props.navigation;
             navigate('searchView');
@@ -223,12 +252,12 @@ export default class SideMenus extends Component {
                 return <BookShelfActivity navigation={navigate} ref='bookShelf' />
                 break
             case 2://购物车
-                return <Text>购物车</Text>
+                return <GoodsCartActivity navigation={navigate} addgoodscart={this._changeIndex.bind(this)} ref='goodsCart' />
                 break
             case 3://个人中心
                 if (this.state.showPersonInfo == true) {
 
-                    return <PersonInfoActivity  navigation={navigate}/>
+                    return <PersonInfoActivity navigation={navigate} />
                 } else {
                     return <LoginActivity _changeRightIcon={this._changeRightIcon.bind(this)} _changeView={this.changeView.bind(this)} />
                 }

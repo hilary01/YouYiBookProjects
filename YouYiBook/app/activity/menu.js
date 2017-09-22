@@ -144,6 +144,10 @@ export default class Menu extends Component {
         this._changeMenuData(itemData.index);
 
     }
+    updateItemIndex() {
+
+        this._changeMenuData(0);
+    }
     _separator = () => {
         return <View style={{ height: 1, backgroundColor: '#e2e2e2' }} />;
     }

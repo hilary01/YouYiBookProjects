@@ -33,6 +33,7 @@ import { toastShort } from '../utils/ToastUtil';
 var bookIds;
 import Global from '../utils/global';
 import DeviceStorage from '../utils/deviceStorage';
+import RNFS from 'react-native-fs';
 export default class BookDetail extends Component {
     static navigationOptions = ({ navigation, screenProps }) => ({
         // 这里面的属性和App.js的navigationOptions是一样的。
@@ -137,7 +138,38 @@ export default class BookDetail extends Component {
 
 
     }
-
+    _downLoadMethord(item) {
+        var that = this;
+        that.setState({
+            show: true,
+        });
+        var DownloadFileOptions = {
+            fromUrl: item.freeread_url,          // URL to download file from
+            toFile: RNFS.DocumentDirectoryPath + '/' + item.book_id + '.pdf', // Local filesystem path to save the file to
+            begin: function (val) {
+                toastShort('开始下载');
+            },
+            progress: function (val) {
+                tempLength = parseInt(val.bytesWritten);
+                totalSize = parseInt(val.contentLength);
+                percents = (tempLength / totalSize).toFixed(2);
+                if ((percents * 100) > 99) {
+                    that.setState({
+                        show: false
+                    });
+                    var obj = new Object();
+                    obj.isDownLoad = true;
+                    toastShort('下载完成');
+                    const { navigate } = that.props.navigation;
+                    navigate('PdfReadView', {
+                        book_id: item.book_id
+                    });
+                    DeviceStorage.save(item.book_id + '.pdf', obj);
+                }
+            },
+        }
+        var result = RNFS.downloadFile(DownloadFileOptions);
+    }
     renderMenuseItem(item, i) {
         return <View >
             <TouchableOpacity onPress={() => this._menuClickListener(item, i)}>
@@ -308,20 +340,51 @@ export default class BookDetail extends Component {
         alert('shareOnlcik');
 
     }
-    onClick(flag) {
+    onClick(flag, item) {
         switch (flag) {
             case '0'://电子书价格
                 this._addBookInShelf();
                 break;
             case '1'://电子书阅读
+                this._readerBook(item);
                 break;
             case '2'://纸质书价格
+                toastShort('支付功能暂未开放');
                 break;
             case '3'://加入购物车
+                this._addGoodsCart();
+
                 break;
             case '4'://纸质书阅读
+                this._readerBook(item);
                 break;
         }
+
+    }
+
+    _readerBook(item) {
+        var that = this;
+        DeviceStorage.get(item.book_id + '.pdf', function (jsonValue) {
+            if (jsonValue != null) {
+
+                var isDownLoad = jsonValue.isDownLoad;
+                if (!isDownLoad) {
+                    that._downLoadMethord(item);
+                } else {
+                    const { navigate } = that.props.navigation;
+                    navigate('PdfReadView', {
+                        book_id: item.book_id
+                    });
+
+                }
+            } else {
+                that._downLoadMethord(item);
+
+            }
+
+
+
+        });
 
     }
 
@@ -356,7 +419,46 @@ export default class BookDetail extends Component {
 
         } else {
 
-            toastShort('支付购买的图书');
+            const { navigate } = this.props.navigation;
+            navigate('CountCenterView', {
+                bookInfos: bookEntity,
+
+            });
+
+        }
+
+    }
+
+
+    /**
+    * 加入购物车
+    */
+    _addGoodsCart() {
+
+        var bookEntity = this.state.detailEntity;
+        var isAdd = false;
+        var that = this;
+        if (null != bookEntity) {
+            DeviceStorage.get('goodscart_' + bookEntity.book_id, function (jsonValue) {
+                console.log('jsonValue=' + jsonValue);
+                if (jsonValue != null) {
+
+                    isAdd = jsonValue.isAdd;
+                    if (!isAdd) {
+                        that._getBookGoodsList(bookEntity);
+                    } else {
+
+                        toastShort('已加入购物车！');
+                    }
+                } else {
+                    that._getBookGoodsList(bookEntity);
+
+                }
+
+
+
+            });
+
         }
 
     }
@@ -378,6 +480,28 @@ export default class BookDetail extends Component {
                 DeviceStorage.save(books.book_id, obj);
             }
             toastShort('加入书架成功！');
+
+        });
+    }
+
+    _getBookGoodsList(books) {
+
+        var bookList = [];
+        var obj = new Object();
+        obj.isAdd = true;
+        DeviceStorage.get('book_goodscart_key', function (jsonValue) {
+            if (null != jsonValue) {
+                bookList = jsonValue;
+                console.log(jsonValue);
+                bookList.push(books);
+                DeviceStorage.save('book_goodscart_key', bookList);
+                DeviceStorage.save('goodscart_' + books.book_id, obj);
+            } else {
+                bookList.push(books);
+                DeviceStorage.save('book_goodscart_key', bookList);
+                DeviceStorage.save('goodscart_' + books.book_id, obj);
+            }
+            toastShort('加入购物车成功！');
 
         });
     }
@@ -418,8 +542,8 @@ export default class BookDetail extends Component {
 
             return <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 10, backgroundColor: '#DEDEDE', }}>
 
-                <CustomBtn textColor='white' textSize={14} btnTxt={elePrice} _BtnOnlcik={() => this.onClick('0')} bgColor='#EBAA00' btnWidth={80} btnHeight={30} />
-                <CustomBtn textColor='white' textSize={14} btnTxt='阅读' _BtnOnlcik={() => this.onClick('1')} bgColor='#25BE00' btnWidth={80} btnHeight={30} />
+                <CustomBtn textColor='white' textSize={14} btnTxt={elePrice} _BtnOnlcik={() => this.onClick('0', detail)} bgColor='#EBAA00' btnWidth={80} btnHeight={30} />
+                <CustomBtn textColor='white' textSize={14} btnTxt='免费试读' _BtnOnlcik={() => this.onClick('1', detail)} bgColor='#25BE00' btnWidth={80} btnHeight={30} />
 
             </View>
 
@@ -427,9 +551,9 @@ export default class BookDetail extends Component {
 
             return <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginTop: 10, backgroundColor: '#DEDEDE', }}>
 
-                <CustomBtn textColor='white' textSize={14} btnTxt={paperPrice} _BtnOnlcik={() => this.onClick('2')} bgColor='#C5C5C5' btnWidth={80} btnHeight={30} />
-                <CustomBtn textColor='white' textSize={14} btnTxt='加入购物车' _BtnOnlcik={() => this.onClick('3')} bgColor='#DF4A0C' btnWidth={80} btnHeight={30} />
-                <CustomBtn textColor='white' textSize={14} btnTxt='阅读' _BtnOnlcik={() => this.onClick('4')} bgColor='#23BD00' btnWidth={80} btnHeight={30} />
+                <CustomBtn textColor='white' textSize={14} btnTxt={paperPrice} _BtnOnlcik={() => this.onClick('2', detail)} bgColor='#C5C5C5' btnWidth={80} btnHeight={30} />
+                <CustomBtn textColor='white' textSize={14} btnTxt='加入购物车' _BtnOnlcik={() => this.onClick('3', detail)} bgColor='#DF4A0C' btnWidth={80} btnHeight={30} />
+                <CustomBtn textColor='white' textSize={14} btnTxt='免费试读' _BtnOnlcik={() => this.onClick('4', detail)} bgColor='#23BD00' btnWidth={80} btnHeight={30} />
 
             </View>
 
